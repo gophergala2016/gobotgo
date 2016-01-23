@@ -79,9 +79,14 @@ func (b Board) rangeCheck(p Position) bool {
 }
 
 func (b Board) bounded(start Position) bool {
+	return b.boundedMask(start) != nil
+}
+
+// Returns a mask of the bounded positions, or nil if none are bounded
+func (b Board) boundedMask(start Position) Board {
 	color := b.get(start)
 	if color == empty {
-		return false
+		return nil
 	}
 	mask := newBoard(len(b)).set(start, color)
 	// We're probably going to allocate somewhat initially, so lets allocate a bit
@@ -102,7 +107,7 @@ func (b Board) bounded(start Position) bool {
 				// Don't add previously checked positions to the frontier
 			case b.get(adj) == empty:
 				// Not bounded empty connected
-				return false
+				return nil
 			case b.get(adj) == color:
 				mask.set(adj, color)
 				frontier = append(frontier, adj)
@@ -113,7 +118,7 @@ func (b Board) bounded(start Position) bool {
 	}
 
 	// if we've exhausted the frontier, this is empty
-	return true
+	return mask
 }
 
 func newBoard(size int) Board {

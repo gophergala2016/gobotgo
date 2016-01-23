@@ -206,6 +206,79 @@ func TestBounded(t *testing.T) {
 	}
 }
 
+func TestBoundedMask(t *testing.T) {
+	tests := []struct {
+		name  string
+		size  int
+		board []intersection
+		p     Position
+		mask  []intersection // nil if move is invalid
+	}{
+		{
+			"empty", 2,
+			[]intersection{
+				empty, empty,
+				empty, empty,
+			},
+			Position{0, 0},
+			nil,
+		},
+		{
+			"open corner", 2,
+			[]intersection{
+				empty, black,
+				black, empty,
+			},
+			Position{1, 0},
+			nil,
+		},
+		{
+			"closed corner", 2,
+			[]intersection{
+				white, black,
+				empty, white,
+			},
+			Position{0, 1},
+			[]intersection{
+				empty, black,
+				empty, empty,
+			},
+		},
+		{
+			"shaped bound", 4,
+			[]intersection{
+				empty, white, white, empty,
+				white, black, black, white,
+				empty, white, black, white,
+				black, black, white, empty,
+			},
+			Position{2, 2},
+			[]intersection{
+				empty, empty, empty, empty,
+				empty, black, black, empty,
+				empty, empty, black, empty,
+				empty, empty, empty, empty,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		b := sliceBoard(test.board, test.size)
+		mask := b.boundedMask(test.p)
+		if mask == nil {
+			if test.mask != nil {
+				t.Errorf("mask '%s' unexpectedly empty", test.name)
+			}
+		} else {
+			if test.mask == nil {
+				t.Errorf("mask '%s' unexpectedly exists", test.name)
+			} else if err := mask.equal(sliceBoard(test.mask, test.size)); err != nil {
+				t.Errorf("mask '%s' result not equal to expected: %s", test.name, err.Error())
+			}
+		}
+	}
+}
+
 func TestBoardEqual(t *testing.T) {
 	size := 19
 
