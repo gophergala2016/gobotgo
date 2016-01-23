@@ -392,3 +392,116 @@ func TestBoardNotEqual(t *testing.T) {
 		t.Error("Boards were equal")
 	}
 }
+
+func TestApplyMove(t *testing.T) {
+	tests := []struct {
+		name    string
+		size    int
+		initial []intersection
+		m       Move
+		final   []intersection // nil if move is invalid
+	}{
+		{
+			"empty", 2,
+			[]intersection{
+				empty, empty,
+				empty, empty,
+			},
+			Move{Black, Position{0, 0}},
+			[]intersection{
+				black, empty,
+				empty, empty,
+			},
+		},
+		{
+			"capture corner", 2,
+			[]intersection{
+				empty, black,
+				empty, white,
+			},
+			Move{White, Position{0, 0}},
+			[]intersection{
+				white, empty,
+				empty, white,
+			},
+		},
+		{
+			"corner eye, player", 3,
+			[]intersection{
+				empty, black, empty,
+				black, empty, empty,
+				empty, empty, empty,
+			},
+			Move{Black, Position{0, 0}},
+			[]intersection{
+				black, black, empty,
+				black, empty, empty,
+				empty, empty, empty,
+			},
+		},
+		{
+			"power corner", 2,
+			[]intersection{
+				empty, black,
+				black, black,
+			},
+			Move{White, Position{0, 0}},
+			[]intersection{
+				white, empty,
+				empty, empty,
+			},
+		},
+		// Self capture tests
+		{
+			"simple corner", 2,
+			[]intersection{
+				empty, black,
+				black, empty,
+			},
+			Move{White, Position{0, 0}},
+			nil,
+		},
+		{
+			"corner eye, opponent", 3,
+			[]intersection{
+				empty, black, empty,
+				black, empty, empty,
+				empty, empty, empty,
+			},
+			Move{White, Position{0, 0}},
+			nil,
+		},
+		{
+			"overlapping capture", 4,
+			[]intersection{
+				empty, black, white, empty,
+				black, empty, black, white,
+				empty, black, white, empty,
+				empty, empty, empty, empty,
+			},
+			Move{White, Position{1, 1}},
+			[]intersection{
+				empty, black, white, empty,
+				black, white, empty, white,
+				empty, black, white, empty,
+				empty, empty, empty, empty,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		before := sliceBoard(test.initial, test.size)
+		after := sliceBoard(coalesce(test.final, test.initial), test.size)
+		b := before.copy()
+		if nil != b.intersectionEmpty(test.m.Position) {
+			t.Errorf("Test %s tried to move to non-empty space %d, %d", test.name, test.m.X, test.m.Y)
+			continue
+		}
+		if err := b.apply(test.m); (test.final == nil) == (err == nil) {
+			t.Errorf("movability of '%s' was unexpectedly %v: %s", test.name, (test.final == nil), err.Error())
+		}
+		if err := b.equal(after); err != nil {
+			t.Errorf("Move '%s' result not equal to expected: %s", test.name, err.Error())
+		}
+	}
+}

@@ -41,8 +41,29 @@ func (b Board) apply(m Move) error {
 	if err := b.intersectionEmpty(m.Position); err != nil {
 		return err
 	}
-	b[m.X][m.Y] = intersection(m.Player)
+
+	color := intersection(m.Player)
+	b.set(m.Position, color)
+
+	captured := false
+	for _, p := range m.adjacent() {
+		switch {
+		case !b.rangeCheck(p):
+		case b.get(p) == color:
+		case b.clearBounded(p) > 0:
+			captured = true
+		}
+	}
+
+	if !captured && b.bounded(m.Position) {
+		b.set(m.Position, empty)
+		return fmt.Errorf("Bounded")
+	}
 	return nil
+}
+
+func (b Board) capture(p Position) bool {
+	return false
 }
 
 func (b Board) equal(c Board) error {
@@ -85,6 +106,7 @@ func (b Board) bounded(start Position) bool {
 // Returns a mask of the bounded positions, or nil if none are bounded
 func (b Board) boundedMask(start Position) Board {
 	color := b.get(start)
+
 	if color == empty {
 		return nil
 	}
