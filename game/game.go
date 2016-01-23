@@ -23,8 +23,11 @@ func (s State) Move(m Move) error {
 	if err := m.valid(s.size, s.player); err != nil {
 		return err
 	}
-	if err := s.current.set(m); err != nil {
+	b := s.current.copy()
+	if err := b.set(m); err != nil {
 		return err
 	}
+	s.previous = s.current
+	s.current = b
 	return nil
 }
