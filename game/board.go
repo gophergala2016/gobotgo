@@ -21,10 +21,13 @@ func (b Board) set(m Move) error {
 	return nil
 }
 
-func (b Board) equal(other Board) error {
-	for i := range b {
-		if b[i] != other[i] {
-			return Errorf("Board state not equal at %d", i)
+func (b Board) equal(c Board) error {
+	d := b.slice()
+	e := c.slice()
+
+	for i := range d {
+		if d[i] != e[i] {
+			return fmt.Errorf("Board state not equal at %d", i)
 		}
 	}
 	return nil
@@ -56,9 +59,16 @@ func sliceBoard(i []intersection, size int) Board {
 	return b
 }
 
+func (b Board) slice() []intersection {
+	if cap(b[0]) != len(b)*len(b[0]) {
+		panic("board does not have entire allocation at board 0")
+	}
+	return b[0][:cap(b[0])]
+}
+
 func (b Board) copy() Board {
 	l := len(b)
 	a := make([]intersection, l*l)
-	copy(a, b[0][:l*l])
+	copy(a, b.slice())
 	return sliceBoard(a, l)
 }
