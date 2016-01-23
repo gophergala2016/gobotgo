@@ -52,11 +52,11 @@ func TestMoveValid(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		state := New(defaultBoardSize)
+		state := New(defaultBoardSize, 10)
 		state.player = test.current
 		err := state.Move(test.input)
 		if err != test.expected {
-			t.Error(test.reason, err)
+			t.Errorf("expected '%s', got '%s'", test.reason, err)
 		}
 	}
 }
