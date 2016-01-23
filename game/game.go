@@ -24,7 +24,7 @@ func (s State) Move(m Move) error {
 		return err
 	}
 	b := s.current.copy()
-	if err := b.set(m); err != nil {
+	if err := b.apply(m); err != nil {
 		return err
 	}
 	s.previous = s.current

@@ -13,7 +13,6 @@ const (
 	white
 )
 
-func (b Board) set(m Move) error {
 	if err := b.intersectionEmpty(m); err != nil {
 		return err
 	}
