@@ -21,6 +21,10 @@ func New(size int) State {
 	}
 }
 
+func (s State) Empty() bool {
+	return s.current == nil
+}
+
 func (s State) valid(m Move) error {
 	if m.Player != s.player {
 		return MoveError(fmt.Sprintf("Not your turn"))
