@@ -25,7 +25,8 @@ type Move struct {
 type Board [][]intersection
 
 type State struct {
-	Current  Board
-	Previous Board
-	Player   player
+	current  Board
+	previous Board
+	player   player
+	size     int
 }
