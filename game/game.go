@@ -30,3 +30,14 @@ type State struct {
 	player   player
 	size     int
 }
+
+func New(size int) State {
+	c := make(Board, size)
+	p := make(Board, size)
+	return State{
+		current:  c,
+		previous: p,
+		player:   White,
+		size:     size,
+	}
+}
