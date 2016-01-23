@@ -4,8 +4,9 @@ import (
 	"testing"
 )
 
+const size = 19
+
 func TestMoveValid(t *testing.T) {
-	size := 19
 	tests := []struct {
 		input    Move
 		current  player
@@ -51,7 +52,9 @@ func TestMoveValid(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		err := test.input.valid(size, test.current)
+		state := New(size)
+		state.player = test.current
+		err := state.Move(test.input)
 		if err != test.expected {
 			t.Error(test.reason, err)
 		}
