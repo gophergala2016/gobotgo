@@ -21,6 +21,10 @@ func (b Board) set(m Move) error {
 	return nil
 }
 
+func (b Board) equal(b Board) error {
+	return nil
+}
+
 func (b Board) intersectionEmpty(m Move) error {
 	i := b[m.X][m.Y]
 	if i != empty {
