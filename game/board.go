@@ -98,9 +98,10 @@ func (b Board) bounded(x, y int) bool {
 			c := pos{f.x + m.x, f.y + m.y}
 			switch {
 			case !rangeCheck(c.x) || !rangeCheck(c.y):
+			case mask[c.x][c.y] == color:
 			case b[c.x][c.y] == empty:
 				return false
-			case mask[c.x][c.y] == color:
+			case b[c.x][c.y] == color:
 				mask[c.x][c.y] = color
 				frontier = append(frontier, c)
 			default:
