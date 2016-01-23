@@ -153,7 +153,7 @@ func TestBounded(t *testing.T) {
 			},
 		},
 		{
-			"surrounded eye bounded",
+			"surrounded eye fully bounded",
 			5,
 			[]intersection{
 				white, white, white, white, white,
@@ -163,11 +163,33 @@ func TestBounded(t *testing.T) {
 				white, white, white, white, white,
 			},
 			[]bool{
-				false, false, false, false, false,
-				false, true, true, true, false,
-				false, true, false, true, false,
-				false, true, true, true, false,
-				false, false, false, false, false,
+				true, true, true, true, true,
+				true, true, true, true, true,
+				true, true, true, true, true,
+				true, true, true, true, true,
+				true, true, true, true, true,
+			},
+		},
+		{
+			"surrounded eye not bounded",
+			7,
+			[]intersection{
+				empty, empty, empty, empty, empty, empty, empty,
+				empty, white, white, white, white, white, empty,
+				empty, white, black, black, black, white, empty,
+				empty, white, black, white, black, white, empty,
+				empty, white, black, black, black, white, empty,
+				empty, white, white, white, white, white, empty,
+				empty, empty, empty, empty, empty, empty, empty,
+			},
+			[]bool{
+				false, false, false, false, false, false, false,
+				false, false, false, false, false, false, false,
+				false, false, true, true, true, false, false,
+				false, false, true, true, true, false, false,
+				false, false, true, true, true, false, false,
+				false, false, false, false, false, false, false,
+				false, false, false, false, false, false, false,
 			},
 		},
 	}
