@@ -6,16 +6,16 @@ type Position struct {
 
 // Move is used to provide an action
 type Move struct {
-	Player player
+	Player color
 	Position
 }
 
-type player int
+type color int
 
 // There are only two players
 const (
-	Black = player(black)
-	White = player(white)
+	Black = color(black)
+	White = color(white)
 )
 
 func (p Position) add(q Position) Position {

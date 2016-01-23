@@ -42,14 +42,14 @@ func (b Board) apply(m Move) error {
 		return err
 	}
 
-	color := intersection(m.Player)
-	b.set(m.Position, color)
+	stone := intersection(m.Player)
+	b.set(m.Position, stone)
 
 	captured := false
 	for _, p := range m.adjacent() {
 		switch {
 		case !b.rangeCheck(p):
-		case b.get(p) == color:
+		case b.get(p) == stone:
 		case b.clearBounded(p) > 0:
 			captured = true
 		}

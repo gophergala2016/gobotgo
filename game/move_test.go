@@ -9,7 +9,7 @@ const defaultBoardSize = 19
 func TestMoveValid(t *testing.T) {
 	tests := []struct {
 		input    Move
-		current  player
+		current  color
 		expected error
 		reason   string
 	}{

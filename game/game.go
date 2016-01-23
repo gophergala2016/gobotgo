@@ -6,7 +6,7 @@ import "fmt"
 type State struct {
 	current  Board
 	previous Board
-	player   player
+	player   color
 	size     int
 }
 
