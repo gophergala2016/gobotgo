@@ -19,6 +19,7 @@ const (
 	ErrSpotNotEmpty = MoveError("Position filled")
 	ErrOutOfBounds  = MoveError("Out of bounds")
 	ErrNoStones     = MoveError("Player out of stones")
+	ErrRepeatState  = MoveError("Move recreates previous state")
 )
 
 type State struct {
@@ -63,6 +64,9 @@ func (s *State) Move(m Move) error {
 	b := s.current.copy()
 	if err := b.apply(m); err != nil {
 		return err
+	}
+	if b.equal(s.previous) == nil {
+		return ErrRepeatState
 	}
 	s.previous = s.current
 	s.current = b

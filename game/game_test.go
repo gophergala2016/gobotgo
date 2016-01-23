@@ -64,3 +64,29 @@ func TestRemainingStop(t *testing.T) {
 		}
 	}
 }
+
+func TestCannotLoopGameState(t *testing.T) {
+	tests := []struct {
+		Move
+		err error
+	}{
+		{Move{Black, Position{1, 2}}, nil},
+		{Move{White, Position{1, 1}}, nil},
+		{Move{Black, Position{1, 2}}, ErrRepeatState},
+		{Move{White, Position{1, 2}}, ErrWrongPlayer},
+		{Move{Black, Position{0, 0}}, nil},
+	}
+	size := 4
+	s := New(size, 20)
+	s.current = sliceBoard([]intersection{
+		empty, black, white, empty,
+		black, empty, empty, white,
+		empty, black, white, empty,
+		empty, empty, empty, empty,
+	}, size)
+	for i, test := range tests {
+		if err := s.Move(test.Move); err != test.err {
+			t.Errorf("for move %d expected error '%s' got '%s'", i, test.err, err)
+		}
+	}
+}
