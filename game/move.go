@@ -33,3 +33,21 @@ func (p Position) adjacent() [4]Position {
 	}
 	return adj
 }
+
+func (c color) opponent() color {
+	if c == White {
+		return Black
+	}
+	return White
+}
+
+func (c color) String() string {
+	switch c {
+	case Black:
+		return "Black"
+	case White:
+		return "White"
+	default:
+		return "(invalid color)"
+	}
+}
