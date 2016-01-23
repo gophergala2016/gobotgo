@@ -1,6 +1,9 @@
 package game
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Board [][]intersection
 
@@ -12,6 +15,32 @@ const (
 	black
 	white
 )
+
+func (i intersection) String() string {
+	switch i {
+	case empty:
+		return "."
+	case black:
+		return "b"
+	case white:
+		return "w"
+	default:
+		panic("(invalid intersection print)")
+	}
+}
+
+func (b Board) String() string {
+	rows := []string{}
+	for _, row := range b {
+		cols := []string{}
+		for _, c := range row {
+			cols = append(cols, c.String())
+		}
+		rows = append(rows, strings.Join(cols, " "))
+	}
+	rows = append(rows, "\n") // add trailing newline
+	return strings.Join(rows, "\n")
+}
 
 func (b Board) valid(m Move) error {
 	if m.X >= len(b) ||

@@ -1,6 +1,9 @@
 package game
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestBuild(t *testing.T) {
 	b := newBoard(5)
@@ -504,4 +507,22 @@ func TestApplyMove(t *testing.T) {
 			t.Errorf("Move '%s' result not equal to expected: %s", test.name, err.Error())
 		}
 	}
+}
+
+func ExampleIntersection_String() {
+	fmt.Println(white, black, empty)
+	// Output: w b .
+}
+
+func ExampleBoard_String() {
+	i := []intersection{
+		white, black, empty,
+		empty, white, black,
+		black, white, empty,
+	}
+	fmt.Println(sliceBoard(i, 3))
+	// Output:
+	// w b .
+	// . w b
+	// b w .
 }
