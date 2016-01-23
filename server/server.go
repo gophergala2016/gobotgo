@@ -47,7 +47,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	// _, poll := r.Form["poll"]
 	g := <-nextGame
 	if g.state == nil {
-		g.state = game.New(size)
+		g.state = game.New(size, 180)
 	}
 	switch {
 	case g.black == notSet:

@@ -60,8 +60,11 @@ func (b Board) apply(m Move) (int, error) {
 	for _, p := range m.adjacent() {
 		switch {
 		case !b.rangeCheck(p):
+			// Ignore out of bounds positions
 		case b.get(p) == stone:
+			// Ignore adjacent positions of move color
 		default:
+			// Clear bounded of adjacent opponent color
 			if count := b.clearBounded(p); count > 0 {
 				points += count
 			}
