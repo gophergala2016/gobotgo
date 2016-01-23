@@ -37,7 +37,7 @@ func New(size int) State {
 	return State{
 		current:  c,
 		previous: p,
-		player:   White,
+		player:   Black,
 		size:     size,
 	}
 }
