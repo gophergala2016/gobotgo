@@ -1,5 +1,7 @@
 package game
 
+import "fmt"
+
 type Board [][]intersection
 
 type intersection int
@@ -16,12 +18,13 @@ func (b Board) set(m Move) error {
 		return err
 	}
 	b[m.X][m.Y] = intersection(m.Player)
+	return nil
 }
 
 func (b Board) intersectionEmpty(m Move) error {
 	i := b[m.X][m.Y]
 	if i != empty {
-		return fmt.Errof("Intersection %d-%d is not empty", m.X, m.Y)
+		return fmt.Errorf("Intersection %d-%d is not empty", m.X, m.Y)
 	}
 	return nil
 }

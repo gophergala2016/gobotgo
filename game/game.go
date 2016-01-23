@@ -26,4 +26,5 @@ func (s State) Move(m Move) error {
 	if err := s.current.set(m); err != nil {
 		return err
 	}
+	return nil
 }
