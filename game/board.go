@@ -13,8 +13,6 @@ const (
 	white
 )
 
-var adjacentMoves = [4]Position{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
-
 type MoveError string
 
 func (m MoveError) Error() string {
@@ -96,8 +94,7 @@ func (b Board) bounded(start Position) bool {
 		frontier = frontier[1:]
 		// Check canditates up, down, left, right
 		// Look for a connected empty. That means we're not bounded
-		for _, m := range adjacentMoves {
-			adj := current.add(m)
+		for _, adj := range current.adjacent() {
 			switch {
 			case !b.rangeCheck(adj):
 				// Don't add out of range positions to the frontier

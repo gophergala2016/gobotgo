@@ -24,3 +24,12 @@ func (p Position) add(q Position) Position {
 		p.Y + q.Y,
 	}
 }
+
+func (p Position) adjacent() [4]Position {
+	var adj [4]Position
+	adjacentMoves := [4]Position{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
+	for i, m := range adjacentMoves {
+		adj[i] = p.add(m)
+	}
+	return adj
+}
