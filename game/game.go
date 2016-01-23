@@ -20,7 +20,7 @@ func New(size int) State {
 }
 
 func (s State) Move(m Move) error {
-	if err := m.valid(s.size); err != nil {
+	if err := m.valid(s.size, s.player); err != nil {
 		return err
 	}
 	if err := s.current.set(m); err != nil {

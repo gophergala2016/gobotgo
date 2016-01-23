@@ -15,7 +15,7 @@ const (
 	White = player(white)
 )
 
-func (m Move) valid(max int) error {
+func (m Move) valid(max int, current player) error {
 	switch {
 	case m.X >= max:
 		return fmt.Errorf("X coordinate %d higher than size %d", m.X, max)
@@ -25,6 +25,8 @@ func (m Move) valid(max int) error {
 		return fmt.Errorf("Y coordinate %d higher than size %d", m.Y, max)
 	case m.Y < 0:
 		return fmt.Errorf("Y coordinate %d less than 0", m.Y)
+	case m.Player != current:
+		return fmt.Errorf("Not your turn")
 	default:
 		return nil
 	}
