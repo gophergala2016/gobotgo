@@ -65,6 +65,14 @@ func (b Board) intersectionEmpty(m Move) error {
 	return nil
 }
 
+func (b Board) set(p Position, i intersection) {
+	b[p.X][p.Y] = i
+}
+
+func (b Board) get(p Position) intersection {
+	return b[p.X][p.Y]
+}
+
 func (b Board) bounded(x, y int) bool {
 	color := b[x][y]
 	if color == empty {
