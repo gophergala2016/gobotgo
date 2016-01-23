@@ -18,13 +18,13 @@ const (
 func (m Move) valid(max int) error {
 	switch {
 	case m.X >= max:
-		return fmt.Errorf("X cooridant %d higher than size %d", m.X, max)
+		return fmt.Errorf("X coordinate %d higher than size %d", m.X, max)
 	case m.X < 0:
-		return fmt.Errorf("X cooridant %d less than 0", m.X)
+		return fmt.Errorf("X coordinate %d less than 0", m.X)
 	case m.Y >= max:
-		return fmt.Errorf("Y cooridant %d higher than size %d", m.Y, max)
+		return fmt.Errorf("Y coordinate %d higher than size %d", m.Y, max)
 	case m.Y < 0:
-		return fmt.Errorf("Y cooridant %d less than 0", m.Y)
+		return fmt.Errorf("Y coordinate %d less than 0", m.Y)
 	default:
 		return nil
 	}
