@@ -15,6 +15,7 @@ func (m MoveError) Error() string {
 
 // MoveErrors can occur if input is invalid, or if the player is unable to play
 const (
+	ErrGameOver     = MoveError("Game Over")
 	ErrWrongPlayer  = MoveError("Wrong player for move")
 	ErrSpotNotEmpty = MoveError("Position filled")
 	ErrOutOfBounds  = MoveError("Out of bounds")
@@ -26,6 +27,7 @@ type State struct {
 	current  Board
 	previous Board
 	player   color
+	over     bool
 	size     int
 	pieces   int
 	stones   map[color]*stones
@@ -38,6 +40,7 @@ func New(size, pieces int) *State {
 		current:  c,
 		previous: p,
 		player:   Black,
+		over:     false,
 		size:     size,
 		pieces:   pieces,
 		stones: map[color]*stones{
@@ -57,7 +60,27 @@ func (s *State) valid(m Move) error {
 	return nil
 }
 
+func (s *State) Pass(player color) error {
+	if s.over {
+		return ErrGameOver
+	}
+	// Legal to pass when out of stones
+	if player != s.player {
+		return ErrWrongPlayer
+	}
+	if s.current.equal(s.previous) == nil {
+		s.over = true
+		return ErrGameOver
+	}
+	s.previous = s.current
+	s.player = player.opponent()
+	return nil
+}
+
 func (s *State) Move(m Move) error {
+	if s.over {
+		return ErrGameOver
+	}
 	if err := s.valid(m); err != nil {
 		return err
 	}

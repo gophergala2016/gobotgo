@@ -90,3 +90,65 @@ func TestCannotLoopGameState(t *testing.T) {
 		}
 	}
 }
+
+func TestDoublePassEndsGame(t *testing.T) {
+	size := 4
+	s := New(size, 30)
+	s.current = sliceBoard([]intersection{
+		empty, black, white, empty,
+		black, empty, empty, white,
+		empty, black, white, empty,
+		empty, empty, empty, empty,
+	}, size)
+	moves := []Move{
+		{Black, Position{1, 2}},
+		{White, Position{1, 1}},
+		{Black, Position{3, 3}},
+		{White, Position{2, 3}},
+		{Black, Position{1, 2}},
+	}
+	for i, m := range moves {
+		if err := s.Move(m); err != nil {
+			t.Fatalf("did not expect move #%d:%v to end in '%s'", i, m, err)
+		}
+	}
+	if err := s.Pass(Black); err != ErrWrongPlayer {
+		t.Fatalf("Expected '%s' when black tried to pass, got '%s'", ErrWrongPlayer, err)
+	}
+	if err := s.Pass(White); err != nil {
+		t.Fatalf("Expected white to be able to pass, got '%s'", err)
+	}
+	if err := s.Move(Move{White, Position{0, 0}}); err != ErrWrongPlayer {
+		t.Fatalf("Expected '%s' when white went after passing, got '%s'", ErrWrongPlayer, err)
+	}
+	if err := s.Move(Move{Black, Position{0, 0}}); err != nil {
+		t.Fatalf("Expected black to go after white passed, got '%s'", err)
+	}
+	passes := []struct {
+		c   color
+		err error
+	}{
+		{White, nil},
+		{White, ErrWrongPlayer},
+		{Black, ErrGameOver},
+		{Black, ErrGameOver},
+		{White, ErrGameOver},
+		{White, ErrGameOver},
+	}
+	for i, pass := range passes {
+		if err := s.Pass(pass.c); err != pass.err {
+			t.Fatalf("Expected Pass(%s) at %d to be '%s', got '%s'", pass.c, i, pass.err, err)
+		}
+	}
+	moves = []Move{
+		{Black, Position{0, 4}},
+		{White, Position{0, 4}},
+		{Black, Position{1, 1}},
+		{White, Position{1, 1}},
+	}
+	for i, m := range moves {
+		if err := s.Move(m); err != ErrGameOver {
+			t.Fatalf("Expected Move(%v) at %d to be '%s', got '%s'", m, i, ErrGameOver, err)
+		}
+	}
+}
