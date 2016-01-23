@@ -198,7 +198,7 @@ func TestBounded(t *testing.T) {
 		for x, row := range b {
 			for y := range row {
 				bounded := test.bounded[x*test.size+y]
-				if bounded != b.bounded(x, y) {
+				if bounded != b.bounded(Position{x, y}) {
 					t.Errorf("bounded test for '%s' at %d,%d was unexpectedly %v", test.name, x, y, !bounded)
 				}
 			}

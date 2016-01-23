@@ -17,3 +17,10 @@ const (
 	Black = player(black)
 	White = player(white)
 )
+
+func (p Position) add(q Position) Position {
+	return Position{
+		p.X + q.X,
+		p.Y + q.Y,
+	}
+}

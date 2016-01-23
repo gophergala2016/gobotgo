@@ -13,6 +13,8 @@ const (
 	white
 )
 
+var adjacentMoves = [4]Position{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
+
 type MoveError string
 
 func (m MoveError) Error() string {
@@ -65,53 +67,45 @@ func (b Board) intersectionEmpty(m Move) error {
 	return nil
 }
 
-func (b Board) set(p Position, i intersection) {
+func (b Board) set(p Position, i intersection) Board {
 	b[p.X][p.Y] = i
+	return b
 }
 
 func (b Board) get(p Position) intersection {
 	return b[p.X][p.Y]
 }
 
-func (b Board) bounded(x, y int) bool {
-	color := b[x][y]
+func (b Board) rangeCheck(p Position) bool {
+	return p.X >= 0 && p.X < len(b) && p.Y >= 0 && p.Y < len(b)
+}
+
+func (b Board) bounded(start Position) bool {
+	color := b.get(start)
 	if color == empty {
 		return false
 	}
-	mask := newBoard(len(b))
-	mask[x][y] = color
+	mask := newBoard(len(b)).set(start, color)
 	// We're probably going to allocate somewhat initially, so lets allocate a bit
-	type pos struct{ x, y int }
-	frontier := make([]pos, 0, 64)
-	frontier = append(frontier, pos{x, y})
-
-	moves := [4]pos{
-		{0, 1},
-		{1, 0},
-		{0, -1},
-		{-1, 0},
-	}
-
-	rangeCheck := func(i int) bool {
-		return i >= 0 && i < len(b)
-	}
+	frontier := make([]Position, 0, 64)
+	frontier = append(frontier, start)
 
 	// Walk the frontier
 	for len(frontier) > 0 {
-		f := frontier[0]
+		current := frontier[0]
 		frontier = frontier[1:]
 		// Check canditates up, down, left, right
 		// Look for a connected empty. That means we're not bounded
-		for _, m := range moves {
-			c := pos{f.x + m.x, f.y + m.y}
+		for _, m := range adjacentMoves {
+			adj := current.add(m)
 			switch {
-			case !rangeCheck(c.x) || !rangeCheck(c.y):
-			case mask[c.x][c.y] == color:
-			case b[c.x][c.y] == empty:
+			case !b.rangeCheck(adj):
+			case mask.get(adj) == color:
+			case b.get(adj) == empty:
 				return false
-			case b[c.x][c.y] == color:
-				mask[c.x][c.y] = color
-				frontier = append(frontier, c)
+			case b.get(adj) == color:
+				mask.set(adj, color)
+				frontier = append(frontier, adj)
 			default:
 				// Dont' add the opponent's space to the frontier
 			}
