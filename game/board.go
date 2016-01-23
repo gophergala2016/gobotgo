@@ -41,6 +41,54 @@ func (b Board) intersectionEmpty(m Move) error {
 	return nil
 }
 
+func (b Board) bounded(x, y int) bool {
+	color := b[x][y]
+	if color == empty {
+		return false
+	}
+	mask := newBoard(len(b))
+	mask[x][y] = color
+	// We're probably going to allocate somewhat initially, so lets allocate a bit
+	type pos struct{ x, y int }
+	frontier := make([]pos, 0, 64)
+	frontier = append(frontier, pos{x, y})
+
+	moves := [4]pos{
+		{0, 1},
+		{1, 0},
+		{0, -1},
+		{-1, 0},
+	}
+
+	rangeCheck := func(i int) bool {
+		return i >= 0 && i < len(b)
+	}
+
+	// Walk the frontier
+	for len(frontier) > 0 {
+		f := frontier[0]
+		frontier = frontier[1:]
+		// Check canditates up, down, left, right
+		// Look for a connected empty. That means we're not bounded
+		for _, m := range moves {
+			c := pos{f.x + m.x, f.y + m.y}
+			switch {
+			case !rangeCheck(c.x) || !rangeCheck(c.y):
+			case b[c.x][c.y] == empty:
+				return false
+			case mask[c.x][c.y] == color:
+				mask[c.x][c.y] = color
+				frontier = append(frontier, c)
+			default:
+				// Dont' add the opponent's space to the frontier
+			}
+		}
+	}
+
+	// if we've exhausted the frontier, this is empty
+	return true
+}
+
 func newBoard(size int) Board {
 	return sliceBoard(make([]intersection, size*size), size)
 }

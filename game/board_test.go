@@ -38,3 +38,63 @@ func TestCopy(t *testing.T) {
 		t.Error("Copied from orignal to copy")
 	}
 }
+
+func TestBounded(t *testing.T) {
+	tests := []struct {
+		name    string
+		size    int
+		b       []intersection
+		bounded []bool
+	}{
+		{
+			"empty", 3,
+			[]intersection{
+				empty, empty, empty,
+				empty, empty, empty,
+				empty, empty, empty,
+			},
+			[]bool{
+				false, false, false,
+				false, false, false,
+				false, false, false,
+			},
+		},
+		{
+			"corner", 3,
+			[]intersection{
+				black, white, empty,
+				white, empty, empty,
+				empty, empty, empty,
+			},
+			[]bool{
+				true, false, false,
+				false, false, false,
+				false, false, false,
+			},
+		},
+		{
+			"diamond", 3,
+			[]intersection{
+				empty, black, empty,
+				black, white, black,
+				empty, black, empty,
+			},
+			[]bool{
+				false, false, false,
+				false, true, false,
+				false, false, false,
+			},
+		},
+	}
+	for _, test := range tests {
+		b := sliceBoard(test.b, test.size)
+		for x, row := range b {
+			for y := range row {
+				bounded := test.bounded[x*test.size+y]
+				if bounded != b.bounded(x, y) {
+					t.Errorf("bounded test for '%s' at %d,%d was unexpectedly %v", test.name, x, y, !bounded)
+				}
+			}
+		}
+	}
+}
