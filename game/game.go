@@ -10,10 +10,10 @@ type State struct {
 	size     int
 }
 
-func New(size int) State {
+func New(size int) *State {
 	c := newBoard(size)
 	p := newBoard(size)
-	return State{
+	return &State{
 		current:  c,
 		previous: p,
 		player:   Black,
@@ -21,18 +21,14 @@ func New(size int) State {
 	}
 }
 
-func (s State) Empty() bool {
-	return s.current == nil
-}
-
-func (s State) valid(m Move) error {
+func (s *State) valid(m Move) error {
 	if m.Player != s.player {
 		return MoveError(fmt.Sprintf("Not your turn"))
 	}
 	return nil
 }
 
-func (s State) Move(m Move) error {
+func (s *State) Move(m Move) error {
 	if err := s.valid(m); err != nil {
 		return err
 	}
@@ -42,5 +38,6 @@ func (s State) Move(m Move) error {
 	}
 	s.previous = s.current
 	s.current = b
+	s.player = m.Player.opponent()
 	return nil
 }

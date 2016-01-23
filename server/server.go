@@ -15,7 +15,7 @@ type gameID uint64
 type gameIDChan chan gameID
 
 type Game struct {
-	state game.State
+	state *game.State
 	black gameID
 	white gameID
 }
@@ -46,7 +46,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	size := parseSize(r)
 	// _, poll := r.Form["poll"]
 	g := <-nextGame
-	if g.state.Empty() {
+	if g.state == nil {
 		g.state = game.New(size)
 	}
 	switch {
