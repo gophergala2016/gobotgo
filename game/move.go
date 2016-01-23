@@ -3,9 +3,13 @@ package game
 
 import "fmt"
 
+type Postition struct {
+	X, Y int
+}
+
 type Move struct {
 	Player player
-	X, Y   int
+	Position
 }
 
 type MoveError string
