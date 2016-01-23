@@ -1,29 +1,6 @@
 // Package game provides means of playing a game
 package game
 
-type intersection int
-type player int
-
-// Player types
-const (
-	empty = intersection(iota)
-	black
-	white
-)
-
-const (
-	Black = player(black)
-	White = player(white)
-)
-
-// Move is used to provide an action
-type Move struct {
-	Player player
-	X, Y   int
-}
-
-type Board [][]intersection
-
 type State struct {
 	current  Board
 	previous Board
@@ -39,5 +16,14 @@ func New(size int) State {
 		previous: p,
 		player:   Black,
 		size:     size,
+	}
+}
+
+func (s State) Move(m Move) error {
+	if err := m.valid(s.size); err != nil {
+		return err
+	}
+	if err := s.current.set(m); err != nil {
+		return err
 	}
 }
