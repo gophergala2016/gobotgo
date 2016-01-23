@@ -3,7 +3,7 @@ package game
 
 import "fmt"
 
-type Postition struct {
+type Position struct {
 	X, Y int
 }
 

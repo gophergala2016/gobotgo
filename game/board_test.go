@@ -12,9 +12,9 @@ func TestBuild(t *testing.T) {
 
 func TestCopy(t *testing.T) {
 	moves := []Move{
-		{White, 0, 0},
-		{White, 4, 7},
-		{Black, 6, 3},
+		{White, Position{0, 0}},
+		{White, Position{4, 7}},
+		{Black, Position{6, 3}},
 	}
 	b := newBoard(8)
 	for _, m := range moves {
