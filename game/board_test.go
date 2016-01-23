@@ -279,6 +279,88 @@ func TestBoundedMask(t *testing.T) {
 	}
 }
 
+func coalesce(lhs, rhs []intersection) []intersection {
+	if lhs != nil {
+		return lhs
+	}
+	return rhs
+}
+
+func TestClearBounded(t *testing.T) {
+	tests := []struct {
+		name    string
+		size    int
+		initial []intersection
+		p       Position
+		final   []intersection // nil if unchanged
+		removed int
+	}{
+		{
+			"empty", 2,
+			[]intersection{
+				empty, empty,
+				empty, empty,
+			},
+			Position{0, 0},
+			nil,
+			0,
+		},
+		{
+			"open corner", 2,
+			[]intersection{
+				empty, black,
+				black, empty,
+			},
+			Position{1, 0},
+			nil,
+			0,
+		},
+		{
+			"closed corner", 2,
+			[]intersection{
+				white, black,
+				empty, white,
+			},
+			Position{0, 1},
+			[]intersection{
+				white, empty,
+				empty, white,
+			},
+			1,
+		},
+		{
+			"shaped bound", 4,
+			[]intersection{
+				empty, white, white, empty,
+				white, black, black, white,
+				empty, white, black, white,
+				black, black, white, empty,
+			},
+			Position{2, 2},
+			[]intersection{
+				empty, white, white, empty,
+				white, empty, empty, white,
+				empty, white, empty, white,
+				black, black, white, empty,
+			},
+			3,
+		},
+	}
+
+	for _, test := range tests {
+		before := sliceBoard(test.initial, test.size)
+		after := sliceBoard(coalesce(test.final, test.initial), test.size)
+		b := before.copy()
+		removed := b.clearBounded(test.p)
+		if removed != test.removed {
+			t.Errorf("clear '%s' expected to remove %d pieces, removed %d pieces", test.name, test.removed, removed)
+		}
+		if err := b.equal(after); err != nil {
+			t.Errorf("clear '%s' result not equal to expected: %s", test.name, err.Error())
+		}
+	}
+}
+
 func TestBoardEqual(t *testing.T) {
 	size := 19
 

@@ -121,6 +121,26 @@ func (b Board) boundedMask(start Position) Board {
 	return mask
 }
 
+// Counts bounded pieces at p and clears them
+func (b Board) clearBounded(start Position) int {
+	mask := b.boundedMask(start)
+	if mask == nil {
+		return 0
+	}
+	count := 0
+	sliced := b.slice()
+	for i, state := range mask.slice() {
+		if state != empty {
+			sliced[i] = empty
+			count++
+		}
+	}
+	if count == 0 {
+		panic("Mask was returned that was entirely empty")
+	}
+	return count
+}
+
 func newBoard(size int) Board {
 	return sliceBoard(make([]intersection, size*size), size)
 }
