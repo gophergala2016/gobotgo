@@ -47,7 +47,8 @@ func TestBounded(t *testing.T) {
 		bounded []bool
 	}{
 		{
-			"empty", 3,
+			"empty",
+			3,
 			[]intersection{
 				empty, empty, empty,
 				empty, empty, empty,
@@ -60,7 +61,8 @@ func TestBounded(t *testing.T) {
 			},
 		},
 		{
-			"corner", 3,
+			"corner",
+			3,
 			[]intersection{
 				black, white, empty,
 				white, empty, empty,
@@ -73,7 +75,8 @@ func TestBounded(t *testing.T) {
 			},
 		},
 		{
-			"diamond", 3,
+			"diamond",
+			3,
 			[]intersection{
 				empty, black, empty,
 				black, white, black,
@@ -83,6 +86,88 @@ func TestBounded(t *testing.T) {
 				false, false, false,
 				false, true, false,
 				false, false, false,
+			},
+		},
+		{
+			"empty corner",
+			3,
+			[]intersection{
+				empty, white, white,
+				white, white, white,
+				white, white, white,
+			},
+			[]bool{
+				false, false, false,
+				false, false, false,
+				false, false, false,
+			},
+		},
+		{
+			"trapped corner",
+			3,
+			[]intersection{
+				black, white, white,
+				white, white, white,
+				white, white, white,
+			},
+			[]bool{
+				true, true, true,
+				true, true, true,
+				true, true, true,
+			},
+		},
+		{
+			"filled box in space",
+			5,
+			[]intersection{
+				empty, empty, empty, empty, empty,
+				empty, empty, black, black, empty,
+				empty, black, white, white, black,
+				empty, empty, black, black, empty,
+				empty, empty, empty, empty, empty,
+			},
+			[]bool{
+				false, false, false, false, false,
+				false, false, false, false, false,
+				false, false, true, true, false,
+				false, false, false, false, false,
+				false, false, false, false, false,
+			},
+		},
+		{
+			"surrounded eye safe",
+			5,
+			[]intersection{
+				white, white, white, white, white,
+				white, black, black, black, white,
+				white, black, empty, black, white,
+				white, black, black, black, white,
+				white, white, white, white, white,
+			},
+			[]bool{
+				true, true, true, true, true,
+				true, false, false, false, true,
+				true, false, false, false, true,
+				true, false, false, false, true,
+				true, true, true, true, true,
+			},
+		},
+		{
+			"surrounded eye bounded",
+			5,
+			[]intersection{
+				white, white, white, white, white,
+				white, black, black, black, white,
+				white, black, white, black, white,
+				white, black, black, black, white,
+				white, white, white, white, white,
+			},
+			[]bool{
+				false, false, false, false, false,
+				false, true, true, true, false,
+				false, true, false, true, false,
+				false, true, true, true, false,
+				false, false, false, false, false,
 			},
 		},
 	}
