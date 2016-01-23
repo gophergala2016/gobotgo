@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-const size = 19
+const defaultBoardSize = 19
 
 func TestMoveValid(t *testing.T) {
 	tests := []struct {
@@ -52,7 +52,7 @@ func TestMoveValid(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		state := New(size)
+		state := New(defaultBoardSize)
 		state.player = test.current
 		err := state.Move(test.input)
 		if err != test.expected {
