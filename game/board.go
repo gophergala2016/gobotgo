@@ -21,7 +21,12 @@ func (b Board) set(m Move) error {
 	return nil
 }
 
-func (b Board) equal(b Board) error {
+func (b Board) equal(other Board) error {
+	for i := range b {
+		if b[i] != other[i] {
+			return Errorf("Board state not equal at %d", i)
+		}
+	}
 	return nil
 }
 
