@@ -38,7 +38,7 @@ func (b Board) apply(m Move) error {
 	if err := b.valid(m); err != nil {
 		return err
 	}
-	if err := b.intersectionEmpty(m); err != nil {
+	if err := b.intersectionEmpty(m.Position); err != nil {
 		return err
 	}
 	b[m.X][m.Y] = intersection(m.Player)
@@ -57,10 +57,10 @@ func (b Board) equal(c Board) error {
 	return nil
 }
 
-func (b Board) intersectionEmpty(m Move) error {
-	i := b[m.X][m.Y]
+func (b Board) intersectionEmpty(p Position) error {
+	i := b[p.X][p.Y]
 	if i != empty {
-		return fmt.Errorf("Intersection %d-%d is not empty", m.X, m.Y)
+		return fmt.Errorf("Intersection %d-%d is not empty", p.X, p.Y)
 	}
 	return nil
 }
