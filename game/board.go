@@ -13,25 +13,14 @@ const (
 	white
 )
 
-type MoveError string
-
-func (m MoveError) Error() string {
-	return string(m)
-}
-
 func (b Board) valid(m Move) error {
-	switch {
-	case m.X >= len(b):
-		return MoveError(fmt.Sprintf("X coordinate %d higher than size %d", m.X, len(b)))
-	case m.X < 0:
-		return MoveError(fmt.Sprintf("X coordinate %d less than 0", m.X))
-	case m.Y >= len(b):
-		return MoveError(fmt.Sprintf("Y coordinate %d higher than size %d", m.Y, len(b)))
-	case m.Y < 0:
-		return MoveError(fmt.Sprintf("Y coordinate %d less than 0", m.Y))
-	default:
-		return nil
+	if m.X >= len(b) ||
+		m.X < 0 ||
+		m.Y >= len(b) ||
+		m.Y < 0 {
+		return ErrOutOfBounds
 	}
+	return nil
 }
 
 func (b Board) apply(m Move) error {

@@ -7,7 +7,7 @@ func TestTurnOrder(t *testing.T) {
 	switch {
 	case s.player != Black:
 		t.Error("Expected first play to be Black")
-	case s.Move(Move{White, Position{0, 0}}) == nil:
+	case s.Move(Move{White, Position{0, 0}}) != ErrWrongPlayer:
 		t.Error("White should not be able to move")
 	case s.player != Black:
 		t.Error("Player should still be Black")
@@ -15,7 +15,7 @@ func TestTurnOrder(t *testing.T) {
 		t.Error("Black should have moved")
 	case s.player != White:
 		t.Error("Player should now be White")
-	case s.Move(Move{Black, Position{1, 1}}) == nil:
+	case s.Move(Move{Black, Position{1, 1}}) != ErrWrongPlayer:
 		t.Error("Black should not be able to move")
 	case s.player != White:
 		t.Error("Player should still be White")
@@ -55,8 +55,9 @@ func TestRemainingStop(t *testing.T) {
 	}
 	s := New(4, 0)
 	for i, test := range tests {
-		if err := s.Move(test); err == nil {
-			t.Errorf("Expected error for move %d:%+v:%s", i, test, err.Error())
+		s.player = test.Player
+		if err := s.Move(test); err != ErrNoStones {
+			t.Errorf("Expected error '%s' for move %d:%+v, got '%s'", ErrNoStones, i, test, err.Error())
 		}
 		if s.stones[Black].remaining != 0 || s.stones[White].remaining != 0 {
 			t.Errorf("Remaining unexpectedly not zero: %d,%d", s.stones[Black].remaining, s.stones[White].remaining)

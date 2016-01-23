@@ -1,12 +1,25 @@
 // Package game provides means of playing a game
 package game
 
-import "fmt"
-
 type stones struct {
 	remaining int
 	captured  int
 }
+
+// MoveError is returned if State.Move can't play the piece
+type MoveError string
+
+func (m MoveError) Error() string {
+	return string(m)
+}
+
+// MoveErrors can occur if input is invalid, or if the player is unable to play
+const (
+	ErrWrongPlayer  = MoveError("Wrong player for move")
+	ErrSpotNotEmpty = MoveError("Position filled")
+	ErrOutOfBounds  = MoveError("Out of bounds")
+	ErrNoStones     = MoveError("Player out of stones")
+)
 
 type State struct {
 	current  Board
@@ -36,9 +49,9 @@ func New(size, pieces int) *State {
 func (s *State) valid(m Move) error {
 	switch {
 	case m.Player != s.player:
-		return MoveError(fmt.Sprintf("Not your turn"))
+		return ErrWrongPlayer
 	case s.stones[m.Player].remaining <= 0:
-		return MoveError(fmt.Sprintf("Out of pieces"))
+		return ErrNoStones
 	}
 	return nil
 }
