@@ -9,8 +9,8 @@ type State struct {
 }
 
 func New(size int) State {
-	c := make(Board, size)
-	p := make(Board, size)
+	c := newBoard(size)
+	p := newBoard(size)
 	return State{
 		current:  c,
 		previous: p,

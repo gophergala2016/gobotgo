@@ -28,3 +28,15 @@ func (b Board) intersectionEmpty(m Move) error {
 	}
 	return nil
 }
+
+func newBoard(size int) Board {
+	b := make(Board, size)
+	// Only allocate once
+	all := make([]intersection, size*size)
+	for row := range b {
+		b[row] = all[:size]
+		all = all[size:]
+	}
+	return b
+}
+
