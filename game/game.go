@@ -24,7 +24,7 @@ type Move struct {
 
 type Board [][]intersection
 
-type Game struct {
+type State struct {
 	Current  Board
 	Previous Board
 	Player   player
