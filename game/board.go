@@ -100,8 +100,11 @@ func (b Board) bounded(start Position) bool {
 			adj := current.add(m)
 			switch {
 			case !b.rangeCheck(adj):
+				// Don't add out of range positions to the frontier
 			case mask.get(adj) == color:
+				// Don't add previously checked positions to the frontier
 			case b.get(adj) == empty:
+				// Not bounded empty connected
 				return false
 			case b.get(adj) == color:
 				mask.set(adj, color)
