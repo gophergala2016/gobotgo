@@ -98,3 +98,35 @@ func TestBounded(t *testing.T) {
 		}
 	}
 }
+
+func TestBoardEqual(t *testing.T) {
+	size := 19
+
+	a := newBoard(size)
+	a[5][5] = intersection(Black)
+	a[6][6] = intersection(White)
+	b := a.copy()
+
+	err := a.equal(b)
+
+	if err != nil {
+		t.Error("Boards not equivalent")
+	}
+}
+
+func TestBoardNotEqual(t *testing.T) {
+	size := 19
+
+	a := newBoard(size)
+	a[5][5] = intersection(Black)
+	a[6][6] = intersection(White)
+	b := newBoard(size)
+	b[5][5] = intersection(Black)
+	b[6][6] = intersection(Black)
+
+	err := a.equal(b)
+
+	if err == nil {
+		t.Error("Boards were equal")
+	}
+}
