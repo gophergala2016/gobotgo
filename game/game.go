@@ -1,15 +1,31 @@
 // Package game provides means of playing a game
 package game
 
+type intersection int
 type player int
 
+// Player types
 const (
-	Empty = player(iota)
-	Black
-	White
+	empty = intersection(iota)
+	black
+	white
 )
 
+const (
+	Black = player(black)
+	White = player(white)
+)
+
+// Move is used to provide an action
 type Move struct {
-	Color player
-	X, Y  int
+	Player player
+	X, Y   int
+}
+
+type Board [][]intersection
+
+type Game struct {
+	Current  Board
+	Previous Board
+	Player   player
 }
