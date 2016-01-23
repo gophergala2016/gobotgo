@@ -30,13 +30,26 @@ func (b Board) intersectionEmpty(m Move) error {
 }
 
 func newBoard(size int) Board {
+	return sliceBoard(make([]intersection, size*size), size)
+}
+
+func sliceBoard(i []intersection, size int) Board {
+	if len(i) != size*size {
+		panic("intersection list isn't size^2")
+	}
 	b := make(Board, size)
 	// Only allocate once
-	all := make([]intersection, size*size)
 	for row := range b {
-		b[row] = all[:size]
-		all = all[size:]
+		b[row] = i[:size]
+		i = i[size:]
 	}
+
 	return b
 }
 
+func (b Board) copy() Board {
+	l := len(b)
+	a := make([]intersection, l*l)
+	copy(a, b[0][:l*l])
+	return sliceBoard(a, l)
+}
