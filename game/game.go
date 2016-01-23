@@ -52,6 +52,8 @@ func New(size, pieces int) *State {
 
 func (s *State) valid(m Move) error {
 	switch {
+	case s.over:
+		return ErrGameOver
 	case m.Player != s.player:
 		return ErrWrongPlayer
 	case s.stones[m.Player].remaining <= 0:
@@ -78,9 +80,6 @@ func (s *State) Pass(player color) error {
 }
 
 func (s *State) Move(m Move) error {
-	if s.over {
-		return ErrGameOver
-	}
 	if err := s.valid(m); err != nil {
 		return err
 	}
