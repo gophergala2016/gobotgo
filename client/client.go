@@ -107,6 +107,8 @@ func (c *Client) move(m []int) error {
 		return game.ErrWrongPlayer
 	case game.ErrRepeatState.Error():
 		return game.ErrRepeatState
+	case game.ErrSelfCapture.Error():
+		return game.ErrSelfCapture
 	case game.ErrGameOver.Error():
 		return game.ErrGameOver
 	default:

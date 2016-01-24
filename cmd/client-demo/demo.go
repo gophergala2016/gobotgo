@@ -41,7 +41,16 @@ func play(c *client.Client) error {
 	for {
 		act.Choose()
 		if err := act.Act(); err != nil {
-			return err
+			switch err {
+			case game.ErrNoStones:
+				fallthrough
+			case game.ErrSpotNotEmpty:
+				fallthrough
+			case game.ErrSelfCapture:
+				log.Printf("invalid move %+v: '%s'", act.Position, err.Error())
+			default:
+				return err
+			}
 		}
 	}
 }

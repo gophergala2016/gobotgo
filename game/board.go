@@ -73,7 +73,7 @@ func (b Board) apply(m Move) (int, error) {
 
 	if points == 0 && b.bounded(m.Position) {
 		b.set(m.Position, empty)
-		return 0, fmt.Errorf("Bounded")
+		return 0, ErrSelfCapture
 	}
 	return points, nil
 }

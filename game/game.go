@@ -26,6 +26,7 @@ const (
 	ErrOutOfBounds  = MoveError("Out of bounds")
 	ErrNoStones     = MoveError("Player out of stones")
 	ErrRepeatState  = MoveError("Move recreates previous state")
+	ErrSelfCapture  = MoveError("Move causes self capture")
 )
 
 type LastMove struct {
