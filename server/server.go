@@ -152,8 +152,11 @@ func (g *Game) waitHandler(w http.ResponseWriter, r *http.Request, id GameID) {
 		writeError(w, http.StatusBadRequest, fmt.Sprintf("No player for id %d", id))
 		return
 	}
-	for t := <-g.turn; t != p; t = <-g.turn {
+	var t game.Color
+	for t = <-g.turn; t != p; t = <-g.turn {
+		g.turn <- t
 	}
+	g.turn <- t
 	w.Write([]byte("go bot go"))
 }
 
