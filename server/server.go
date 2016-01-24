@@ -44,9 +44,7 @@ func main() {
 
 func startHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	// name := r.FormValue("name")
 	size := parseSize(r)
-	// _, poll := r.Form["poll"]
 	g := <-nextGame
 	if g.state == nil {
 		g.state = game.New(size, 180)
