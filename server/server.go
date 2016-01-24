@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
 	"strconv"
 
 	"github.com/gophergala2016/gobotgo/game"
@@ -38,8 +37,8 @@ func init() {
 func MuxerAPIv1() http.Handler {
 	root := "/api/v1"
 	mux := http.NewServeMux()
-	mux.HandleFunc(filepath.Join(root, "game/start")+"/", startHandler)
-	play := filepath.Join(root, "game/play") + "/"
+	mux.HandleFunc(root+"/game/start/", startHandler)
+	play := root + "/game/play/"
 	mux.Handle(play, http.StripPrefix(play, http.HandlerFunc(playHandler)))
 	return mux
 }
