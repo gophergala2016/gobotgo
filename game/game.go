@@ -26,11 +26,11 @@ const (
 type State struct {
 	current  Board
 	previous Board
-	player   color
+	player   Color
 	over     bool
 	size     int
 	pieces   int
-	stones   map[color]*stones
+	stones   map[Color]*stones
 }
 
 func New(size, pieces int) *State {
@@ -42,7 +42,7 @@ func New(size, pieces int) *State {
 		over:     false,
 		size:     size,
 		pieces:   pieces,
-		stones: map[color]*stones{
+		stones: map[Color]*stones{
 			White: {pieces, 0},
 			Black: {pieces, 0},
 		},
@@ -65,7 +65,7 @@ func (s *State) valid(m Move) error {
 	return nil
 }
 
-func (s *State) Pass(player color) error {
+func (s *State) Pass(player Color) error {
 	if s.over {
 		return ErrGameOver
 	}

@@ -61,10 +61,10 @@ func TestCannotLoopGameState(t *testing.T) {
 	}
 	size := 4
 	s := New(size, 20)
-	s.current = sliceBoard([]intersection{
-		empty, black, white, empty,
-		black, empty, empty, white,
-		empty, black, white, empty,
+	s.current = sliceBoard([]Color{
+		empty, Black, White, empty,
+		Black, empty, empty, White,
+		empty, Black, White, empty,
 		empty, empty, empty, empty,
 	}, size)
 	for i, test := range tests {
@@ -77,10 +77,10 @@ func TestCannotLoopGameState(t *testing.T) {
 func TestDoublePassEndsGame(t *testing.T) {
 	size := 4
 	s := New(size, 30)
-	s.current = sliceBoard([]intersection{
-		empty, black, white, empty,
-		black, empty, empty, white,
-		empty, black, white, empty,
+	s.current = sliceBoard([]Color{
+		empty, Black, White, empty,
+		Black, empty, empty, White,
+		empty, Black, White, empty,
 		empty, empty, empty, empty,
 	}, size)
 	moves := []Move{
@@ -108,7 +108,7 @@ func TestDoublePassEndsGame(t *testing.T) {
 		t.Fatalf("Expected black to go after white passed, got '%s'", err)
 	}
 	passes := []struct {
-		c   color
+		c   Color
 		err error
 	}{
 		{White, nil},

@@ -6,16 +6,17 @@ type Position struct {
 
 // Move is used to provide an action
 type Move struct {
-	Player color
+	Player Color
 	Position
 }
 
-type color int
+type Color int
 
 // There are only two players
 const (
-	Black = color(black)
-	White = color(white)
+	None = Color(iota)
+	Black
+	White
 )
 
 func (p Position) add(q Position) Position {
@@ -34,20 +35,24 @@ func (p Position) adjacent() [4]Position {
 	return adj
 }
 
-func (c color) opponent() color {
-	if c == White {
+func (c Color) opponent() Color {
+	switch c {
+	case White:
 		return Black
+	case Black:
+		return White
+	default:
+		return None
 	}
-	return White
 }
 
-func (c color) String() string {
+func (c Color) String() string {
 	switch c {
 	case Black:
 		return "Black"
 	case White:
 		return "White"
 	default:
-		return "(invalid color)"
+		return "None"
 	}
 }

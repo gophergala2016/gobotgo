@@ -5,27 +5,20 @@ import (
 	"strings"
 )
 
-type Board [][]intersection
+type Board [][]Color
 
-type intersection int
+const empty = None
 
-// Player types
-const (
-	empty = intersection(iota)
-	black
-	white
-)
-
-func (i intersection) String() string {
+func (i Color) Dot() string {
 	switch i {
-	case empty:
+	case None:
 		return "."
-	case black:
+	case Black:
 		return "b"
-	case white:
+	case White:
 		return "w"
 	default:
-		panic("(invalid intersection print)")
+		panic("(invalid Color print)")
 	}
 }
 
@@ -34,7 +27,7 @@ func (b Board) String() string {
 	for _, row := range b {
 		cols := []string{}
 		for _, c := range row {
-			cols = append(cols, c.String())
+			cols = append(cols, c.Dot())
 		}
 		rows = append(rows, strings.Join(cols, " "))
 	}
@@ -60,7 +53,7 @@ func (b Board) apply(m Move) (int, error) {
 		return 0, err
 	}
 
-	stone := intersection(m.Player)
+	stone := m.Player
 	b.set(m.Position, stone)
 
 	points := 0
@@ -110,12 +103,12 @@ func (b Board) intersectionEmpty(p Position) error {
 	return nil
 }
 
-func (b Board) set(p Position, i intersection) Board {
+func (b Board) set(p Position, i Color) Board {
 	b[p.X][p.Y] = i
 	return b
 }
 
-func (b Board) get(p Position) intersection {
+func (b Board) get(p Position) Color {
 	return b[p.X][p.Y]
 }
 
@@ -202,9 +195,9 @@ func (b Board) score() (blackPoints, whitePoints int) {
 	}
 	for _, p := range points.slice() {
 		switch p {
-		case black:
+		case Black:
 			blackPoints++
-		case white:
+		case White:
 			whitePoints++
 		}
 	}
@@ -216,9 +209,9 @@ func (b Board) explore(start Position, mask Board) {
 		return
 	}
 
-	explored := intersection(-1)
-	previous := intersection(-2)
-	unbounded := intersection(-3)
+	explored := Color(-1)
+	previous := Color(-2)
+	unbounded := Color(-3)
 
 	// We're probably going to allocate somewhat initially, so lets allocate a bit
 	frontier := make([]Position, 0, 64)
@@ -255,7 +248,7 @@ func (b Board) explore(start Position, mask Board) {
 		}
 	}
 
-	if color == white || color == black {
+	if color == White || color == Black {
 		for i, c := range mask.slice() {
 			if c == explored {
 				b.slice()[i] = color
@@ -272,12 +265,12 @@ func (b Board) explore(start Position, mask Board) {
 }
 
 func newBoard(size int) Board {
-	return sliceBoard(make([]intersection, size*size), size)
+	return sliceBoard(make([]Color, size*size), size)
 }
 
-func sliceBoard(i []intersection, size int) Board {
+func sliceBoard(i []Color, size int) Board {
 	if len(i) != size*size {
-		panic("intersection list isn't size^2")
+		panic("underlying list isn't size^2")
 	}
 	b := make(Board, size)
 	// Only allocate once
@@ -289,16 +282,16 @@ func sliceBoard(i []intersection, size int) Board {
 	return b
 }
 
-func (b Board) slice() []intersection {
+func (b Board) slice() []Color {
 	if cap(b[0]) != len(b)*len(b[0]) {
-		panic("board does not have entire allocation at board 0")
+		panic("board does not have entire allocation at board[0]")
 	}
 	return b[0][:cap(b[0])]
 }
 
 func (b Board) copy() Board {
 	l := len(b)
-	a := make([]intersection, l*l)
+	a := make([]Color, l*l)
 	copy(a, b.slice())
 	return sliceBoard(a, l)
 }
