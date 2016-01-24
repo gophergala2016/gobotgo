@@ -62,8 +62,9 @@ func parseAction(r *http.Request) (string, error) {
 }
 
 func writeJSON(w http.ResponseWriter, i interface{}) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Content-Type", "application/json")
+	w.Header().Add("Access-Control-Allow-Headers", "X-Requested-With,Content-Type,Accept")
 	b, err := json.Marshal(i)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, fmt.Sprintf("Write JSON marshal error %v: %s", i, err.Error()))
