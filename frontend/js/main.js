@@ -97,8 +97,13 @@ $('.refresh').click(function () {
 });
 
 $('.pass').click(function () {
-    ajaxPost(sendMove, []);
+    //ajaxPost(sendMove, "[]");
+    $.post(sendMove, "[1, 2]", okay).fail(connectError);
 });
+
+function okay() {
+    showToast("Send okay", 2000)
+}
 
 // Activate the temporary notification 'toast' for _time ms with _message
 function showToast(_message, _time) {
