@@ -80,10 +80,6 @@ func (b Board) apply(m Move) error {
 	return nil
 }
 
-func (b Board) capture(p Position) bool {
-	return false
-}
-
 func (b Board) equal(c Board) error {
 	switch {
 	case b == nil && c == nil:
