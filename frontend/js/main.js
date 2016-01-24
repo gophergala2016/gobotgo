@@ -17,7 +17,7 @@ function init() {
     for (var i = 0; i < size; i++){
         test_data[i] = [];
         for (var j = 0; j < size; j++){
-            test_data[i][j] = 0;
+            test_data[i][j] = "None";
         }
     }
     drawTable(test_data);
@@ -38,21 +38,21 @@ function boardRefresh(data, status) {
     var color;
     console.log(data);
     console.log(status);
-    for ( var i = 0; i < data["state"].length; i++ ) {
-        for ( var j = 0; j < data["state"].length; j++ ) {
+    for ( var i = 0; i < data["board"].length; i++ ) {
+        for ( var j = 0; j < data["board"].length; j++ ) {
 
-            var current = data["state"][i][j];
+            var current = data["board"][i][j];
 
-            if ( data["state"] == "None") {
+            if ( data["board"][i][j] == "None") {
                 color = "img/null.png"
             }       
-            else if ( rowData[j] == "Black" ) {
+            else if ( data["board"][i][j] == "Black" ) {
                 color = "img/black.png"
             }  
-            else if ( rowData[j] == "White" ) {
+            else if ( data["board"][i][j] == "White" ) {
                 color = "img/white.png"
             }
-            $('#GameBoard tr').eq(i).find('td').eq(j).find('img').src = color;
+            $('#GameBoard tr').eq(i).find('td').eq(j).find('img').attr('src', color);
         }
     }
     return;
@@ -97,8 +97,7 @@ $('.refresh').click(function () {
 });
 
 $('.pass').click(function () {
-    //ajaxPost(sendMove, "[]");
-    $.post(sendMove, "[1, 2]", okay).fail(connectError);
+    $.post(sendMove, "[2,2]", okay).fail(connectError);
 });
 
 function okay() {
