@@ -10,7 +10,6 @@ import (
 )
 
 func playHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	id, err := parseGameID(r)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
