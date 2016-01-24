@@ -298,3 +298,17 @@ func (b Board) copy() Board {
 	copy(a, b.slice())
 	return sliceBoard(a, l)
 }
+
+// Copy copies a board which will be mapped to a continuous underlying slice
+func (b Board) Copy() Board {
+	l := len(b)
+	if cap(b[0]) == l*l {
+		return b.copy()
+	}
+	// Copy the board onto an efficiently allocated underlying slice
+	c := newBoard(l)
+	for i := range c {
+		copy(c[i], b[i])
+	}
+	return c
+}
