@@ -559,6 +559,17 @@ func TestScore(t *testing.T) {
 			},
 			2, 13,
 		},
+		{
+			5,
+			[]intersection{
+				empty, white, empty, white, empty,
+				black, empty, empty, empty, white,
+				empty, black, empty, empty, white,
+				black, empty, empty, white, empty,
+				empty, black, empty, white, empty,
+			},
+			6, 9,
+		},
 	}
 
 	for i, test := range tests {
