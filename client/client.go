@@ -158,3 +158,11 @@ func (c *Client) CurrentPlayer() game.Color {
 func (c *Client) State() game.Board {
 	return c.state.Board.Copy()
 }
+
+func (c *Client) BlackStones() game.Stones {
+	return c.state.Black
+}
+
+func (c *Client) WhiteStones() game.Stones {
+	return c.state.White
+}
