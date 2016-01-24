@@ -62,7 +62,7 @@ func (c Color) String() string {
 	}
 }
 
-func (c *Color) MarshalJSON() ([]byte, error) {
+func (c Color) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.String())
 }
 

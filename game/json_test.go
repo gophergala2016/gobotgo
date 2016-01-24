@@ -88,3 +88,35 @@ func TestBoardMarshal(t *testing.T) {
 		}
 	}
 }
+
+// One big test, for old times sake
+func TestMarshalState(t *testing.T) {
+	size := 3
+	s := New(size, 20)
+	initial := []Color{
+		White, Black, empty,
+		empty, White, Black,
+		Black, White, empty,
+	}
+	s.current = sliceBoard(initial, size)
+	s.player = White
+	move := Move{White, Position{0, 2}}
+	if err := s.Move(move); err != nil {
+		t.Fatalf("unable to initialize with move %v, got '%s'", move, err.Error())
+	}
+
+	data, err := json.Marshal(s)
+	if err != nil {
+		t.Fatalf("failed to marshal state, '%s'", err.Error())
+	}
+
+	expected := `{"board":[["White","None","White"],["None","White","Black"],["Black","White","None"]],` +
+		`"currentplayer":"Black",` +
+		`"black":{"remaining":20,"captured":0},` +
+		`"white":{"remaining":19,"captured":1},` +
+		`"lastmove":{"Player":"White","X":0,"Y":2,"PiecesRemoved":1}}`
+
+	if expected != string(data) {
+		t.Fatalf("unexpected JSON from marshalled state:\nexp: %s\ngot: %s", expected, string(data))
+	}
+}

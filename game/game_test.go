@@ -41,9 +41,9 @@ func TestRemainingCountdown(t *testing.T) {
 		if err := s.Move(test.Move); err != nil {
 			t.Fatalf("Unexpected error for move %d:%+v:%s", i, test.Move, err.Error())
 		}
-		if test.black != s.stones[Black].remaining ||
-			test.white != s.stones[White].remaining {
-			t.Fatalf("Failed remaing for row %d. Expected %d,%d got %d,%d.", i, test.black, test.white, s.stones[Black].remaining, s.stones[White].remaining)
+		if test.black != s.stones[Black].Remaining ||
+			test.white != s.stones[White].Remaining {
+			t.Fatalf("Failed remaing for row %d. Expected %d,%d got %d,%d.", i, test.black, test.white, s.stones[Black].Remaining, s.stones[White].Remaining)
 		}
 	}
 }
