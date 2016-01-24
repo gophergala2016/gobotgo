@@ -10,6 +10,8 @@
 
 	<link rel="stylesheet" href="css/styles.css?v=1.0">
 
+	<div class="pageHeader">Gobotgo</div>
+
 </head>
 
 <body>
@@ -17,7 +19,7 @@
 	<div class="background">
 		<div class="content">
 
-			<table id="GameBoard"></table>
+			<table id="GameBoard" cellspacing="0" cellpadding="0"></table>
 
 			<div class="divider"></div>
 
@@ -25,13 +27,15 @@
 			<a href="#" class="styledButton new">New Game</a>
 			<a href="#" class="styledButton showToast">Show Toast</a>
 			<div class="error" style='display:none'>The toast was not set</div>
+			<div class="feedbackBox">Message Box</div>
 		</div>
 	</div>
 	
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script src="js/main.js"></script>
-	<body onload="test();">
+	<body onload="init();">
+
 </body>
 
 </html>
