@@ -51,3 +51,40 @@ func TestColorMarshal(t *testing.T) {
 		}
 	}
 }
+
+// Just confirm we have to do nothing
+func TestBoardMarshal(t *testing.T) {
+	tests := []struct {
+		size  int
+		board []Color
+		json  string
+	}{
+		{
+			3,
+			make([]Color, 9),
+			`[["None","None","None"],["None","None","None"],["None","None","None"]]`,
+		},
+		{
+			3,
+			[]Color{
+				White, Black, empty,
+				empty, White, Black,
+				Black, White, empty,
+			},
+			`[["White","Black","None"],["None","White","Black"],["Black","White","None"]]`,
+		},
+	}
+
+	for _, test := range tests {
+		b := sliceBoard(test.board, test.size)
+		data, err := json.Marshal(b)
+		if err != nil {
+			t.Logf("board:\n%s", b)
+			t.Errorf("couldn't unmarshal board becaus '%s'", err.Error())
+			continue
+		}
+		if string(data) != test.json {
+			t.Errorf("data didn't unmarshal:\nexp: %s\ngot: %s", test.json, string(data))
+		}
+	}
+}
