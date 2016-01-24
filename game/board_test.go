@@ -509,6 +509,67 @@ func TestApplyMove(t *testing.T) {
 	}
 }
 
+func TestScore(t *testing.T) {
+	tests := []struct {
+		size         int
+		board        []intersection
+		black, white int
+	}{
+		{
+			2,
+			[]intersection{
+				empty, empty,
+				empty, empty,
+			},
+			0, 0,
+		},
+		{
+			2,
+			[]intersection{
+				empty, black,
+				black, empty,
+			},
+			2, 2,
+		},
+		{
+			2,
+			[]intersection{
+				white, black,
+				empty, white,
+			},
+			1, 3,
+		},
+		{
+			4,
+			[]intersection{
+				empty, white, white, empty,
+				white, black, black, white,
+				empty, white, black, white,
+				black, black, white, empty,
+			},
+			5, 10,
+		},
+		{
+			4,
+			[]intersection{
+				empty, white, white, empty,
+				white, empty, empty, white,
+				empty, white, empty, white,
+				black, black, white, empty,
+			},
+			2, 13,
+		},
+	}
+
+	for i, test := range tests {
+		board := sliceBoard(test.board, test.size)
+		b, w := board.score()
+		if b != test.black || w != test.white {
+			t.Errorf("for %d expected %d-%d, got %d-%d\n%s", i, test.black, test.white, b, w, board)
+		}
+	}
+}
+
 func ExampleIntersection_String() {
 	fmt.Println(white, black, empty)
 	// Output: w b .

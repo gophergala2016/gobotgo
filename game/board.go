@@ -189,6 +189,90 @@ func (b Board) clearBounded(start Position) int {
 	return count
 }
 
+func (b Board) score() (blackPoints, whitePoints int) {
+	points := b.copy()
+	mask := newBoard(len(b))
+	for x := 0; x < len(b); x++ {
+		for y := 0; y < len(b); y++ {
+			switch {
+			case points[x][y] != empty:
+			case mask[x][y] != empty:
+			default:
+				points.explore(Position{x, y}, mask)
+			}
+		}
+	}
+	for _, p := range points.slice() {
+		switch p {
+		case black:
+			blackPoints++
+		case white:
+			whitePoints++
+		}
+	}
+	return
+}
+
+func (b Board) explore(start Position, mask Board) {
+	if b.get(start) != empty {
+		return
+	}
+
+	explored := intersection(-1)
+	previous := intersection(-2)
+	unbounded := intersection(-3)
+
+	// We're probably going to allocate somewhat initially, so lets allocate a bit
+	frontier := make([]Position, 0, 64)
+	frontier = append(frontier, start)
+
+	color := empty
+	mask.set(start, explored)
+	// Walk the frontier
+	for len(frontier) > 0 {
+		current := frontier[0]
+		frontier = frontier[1:]
+		// Check canditates up, down, left, right
+		// Look for a connected "other". That means we're not bounded
+		for _, adj := range current.adjacent() {
+			switch {
+			case !b.rangeCheck(adj):
+				// Don't add out of range positions to the frontier
+			case mask.get(adj) == explored:
+				// Don't add previously checked positions to the frontier
+			case mask.get(adj) == previous:
+				panic("Unexpectedly got to previous!")
+
+			case b.get(adj) == empty:
+				mask.set(adj, explored)
+				frontier = append(frontier, adj)
+
+			// We've found a color, what do we do?
+			case b.get(adj) == color:
+			case color == empty:
+				color = b.get(adj)
+			default:
+				color = unbounded
+			}
+		}
+	}
+
+	if color == white || color == black {
+		for i, c := range mask.slice() {
+			if c == explored {
+				b.slice()[i] = color
+			}
+		}
+	}
+	// Clear found positions
+	m := mask.slice()
+	for i, c := range m {
+		if c == explored {
+			m[i] = previous
+		}
+	}
+}
+
 func newBoard(size int) Board {
 	return sliceBoard(make([]intersection, size*size), size)
 }
