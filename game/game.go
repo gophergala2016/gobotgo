@@ -99,7 +99,7 @@ func (s *State) Move(m Move) error {
 		return err
 	}
 	b := s.current.copy()
-	captured, err := b.apply(m)
+	captured, err := b.Apply(m)
 	if err != nil {
 		return err
 	}

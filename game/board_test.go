@@ -508,7 +508,7 @@ func TestApplyMove(t *testing.T) {
 			t.Errorf("Test %s tried to move to non-empty space %d, %d", test.name, test.m.X, test.m.Y)
 			continue
 		}
-		points, err := b.apply(test.m)
+		points, err := b.Apply(test.m)
 		if (test.final == nil) == (err == nil) {
 			t.Errorf("movability of '%s' was unexpectedly %v: %s", test.name, (test.final == nil), err.Error())
 		}

@@ -45,7 +45,8 @@ func (b Board) valid(m Move) error {
 	return nil
 }
 
-func (b Board) apply(m Move) (int, error) {
+// Apply adds the move and returns the number of captured pieces after clearing them from the board.
+func (b Board) Apply(m Move) (int, error) {
 	if err := b.valid(m); err != nil {
 		return 0, err
 	}
