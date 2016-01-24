@@ -16,9 +16,10 @@ type GameID uint64
 type gameIDChan chan GameID
 
 type Game struct {
-	state   *game.State
-	players map[GameID]game.Color
-	turn    chan game.Color
+	state    *game.State
+	players  map[GameID]game.Color
+	turn     chan game.Color
+	gameOver bool
 }
 
 var nextGame = make(chan *Game, 1)
@@ -138,6 +139,7 @@ func (g *Game) moveHandler(w http.ResponseWriter, r *http.Request, id GameID) {
 func (g *Game) pass(w http.ResponseWriter, c game.Color) {
 	if err := g.state.Pass(c); err != nil {
 		if err == game.ErrGameOver {
+			g.gameOver = true
 			w.Write([]byte(err.Error()))
 			return
 		}
