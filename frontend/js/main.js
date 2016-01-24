@@ -1,6 +1,7 @@
 
 var data = [];
 var size = 19;
+var toastValue = "The toast is shown.";
 
 function test() {
     for (var i = 0; i < size; i++){
@@ -12,6 +13,11 @@ function test() {
     }
     drawTable(data);
 }
+
+$('.showToast').click(function () {
+    $('.error').text(toastValue);
+    $('.error').stop().fadeIn(400).delay(3000).fadeOut(400); //fade out after 3 seconds
+});
 
 function drawTable(data) {
     var header = $("<tr>")
