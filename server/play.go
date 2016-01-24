@@ -14,7 +14,6 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Println("taking action id", id)
 	action, err := parseAction(r)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
@@ -29,7 +28,6 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 	case "state":
 		g.stateHandler(w, r)
 	case "move":
-		log.Println("move action")
 		g.moveHandler(w, r, id)
 	case "wait":
 		g.waitHandler(w, r, id)
