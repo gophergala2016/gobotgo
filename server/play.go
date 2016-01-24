@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -26,7 +27,7 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if g.gameOver {
-		w.Write([]byte("Game Over"))
+		writeJSON(w, "Game Over")
 		return
 	}
 	switch action {
@@ -60,8 +61,19 @@ func parseAction(r *http.Request) (string, error) {
 	return parts[1], nil
 }
 
+func writeJSON(w http.ResponseWriter, i interface{}) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	b, err := json.Marshal(i)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, fmt.Sprintf("Write JSON marshal error %v: %s", i, err.Error()))
+		return
+	}
+	w.Write(b)
+}
+
 func writeError(w http.ResponseWriter, status int, message string) {
 	w.WriteHeader(status)
-	w.Write([]byte(message))
+	writeJSON(w, message)
 	log.Println(message)
 }

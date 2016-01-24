@@ -87,10 +87,10 @@ func TestWaitHandler(t *testing.T) {
 	time.Sleep(1 * time.Second)
 	playMove(&w3, 3, "[1,1]")
 	wg.Wait()
-	if "valid" != string(w3.content) {
+	if `"valid"` != string(w3.content) {
 		t.Errorf("Wait handler test move 3 not valid: %s", string(w3.content))
 	}
-	if "go bot go" != string(w4.content) {
+	if `"go bot go"` != string(w4.content) {
 		t.Errorf("Wait handler test wait 4 out: %s", string(w4.content))
 	}
 
@@ -99,10 +99,10 @@ func TestWaitHandler(t *testing.T) {
 	time.Sleep(1 * time.Second)
 	playMove(&w4, 4, "[2,2]")
 	wg.Wait()
-	if "valid" != string(w4.content) {
+	if `"valid"` != string(w4.content) {
 		t.Errorf("Wait handler test move 4 not valid: %s", string(w4.content))
 	}
-	if "go bot go" != string(w3.content) {
+	if `"go bot go"` != string(w3.content) {
 		t.Errorf("Wait handler test wait 3 out: %s", string(w3.content))
 	}
 

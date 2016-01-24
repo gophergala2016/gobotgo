@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -82,12 +81,11 @@ func (c *Client) move(m []int) error {
 		return err
 	}
 	defer resp.Body.Close()
-	data, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
+	var response string
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return err
 	}
-
-	switch string(data) {
+	switch response {
 	case "valid":
 		return nil
 	case game.ErrSpotNotEmpty.Error():
@@ -101,7 +99,7 @@ func (c *Client) move(m []int) error {
 	case game.ErrGameOver.Error():
 		return game.ErrGameOver
 	default:
-		return fmt.Errorf("unexpected response: %s", string(data))
+		return fmt.Errorf("Bad request: %s", response)
 	}
 }
 

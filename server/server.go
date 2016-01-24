@@ -4,7 +4,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -45,7 +44,6 @@ func MuxerAPIv1() http.Handler {
 }
 
 func startHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	r.ParseForm()
 	size := parseSize(r)
 	g := <-nextGame
@@ -73,11 +71,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	}{
 		id, c,
 	}
-	b, err := json.Marshal(&s)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, fmt.Sprintf("JSON marshal error for %v: %s", s, err.Error()))
-	}
-	w.Write(b)
+	writeJSON(w, &s)
 }
 
 func parseSize(r *http.Request) int {
@@ -99,13 +93,7 @@ func (id GameID) String() string {
 }
 
 func (g Game) stateHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := json.Marshal(g.state)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "JSON error")
-		log.Println(err)
-		return
-	}
-	w.Write(b)
+	writeJSON(w, g.state)
 }
 
 func (g *Game) moveHandler(w http.ResponseWriter, r *http.Request, id GameID) {
@@ -132,7 +120,7 @@ func (g *Game) moveHandler(w http.ResponseWriter, r *http.Request, id GameID) {
 		g.turn <- t
 		return
 	}
-	w.Write([]byte("valid"))
+	writeJSON(w, "valid")
 	g.changeTurn(t)
 }
 
@@ -140,12 +128,12 @@ func (g *Game) pass(w http.ResponseWriter, c game.Color) {
 	if err := g.state.Pass(c); err != nil {
 		if err == game.ErrGameOver {
 			g.gameOver = true
-			w.Write([]byte(err.Error()))
+			writeJSON(w, err.Error())
 			return
 		}
 		writeError(w, http.StatusBadRequest, err.Error())
 	}
-	w.Write([]byte("valid"))
+	writeJSON(w, "valid")
 }
 
 func (g *Game) waitHandler(w http.ResponseWriter, r *http.Request, id GameID) {
@@ -159,7 +147,7 @@ func (g *Game) waitHandler(w http.ResponseWriter, r *http.Request, id GameID) {
 		g.turn <- t
 	}
 	g.turn <- t
-	w.Write([]byte("go bot go"))
+	writeJSON(w, "go bot go")
 }
 
 func (g Game) parseMove(r *http.Request, c game.Color) (game.Move, error) {
