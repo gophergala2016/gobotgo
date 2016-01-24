@@ -20,7 +20,7 @@ body {
 	font-size: 2em;
 }
 
-table, th, td, th {
+table, th, td, tr {
 	text-align: center;
 }
 
