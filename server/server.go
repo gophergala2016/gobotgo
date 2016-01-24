@@ -28,6 +28,8 @@ var gameMap = map[GameID]*Game{}
 
 const notSet GameID = 0
 
+var passErr = fmt.Errorf("Pass")
+
 func init() {
 	nextGame <- &Game{}
 	masterID <- 1
@@ -115,6 +117,11 @@ func (g *Game) moveHandler(w http.ResponseWriter, r *http.Request, id GameID) {
 	}
 	m, err := g.parseMove(r, p)
 	if err != nil {
+		if err == passErr {
+			g.pass(w, p)
+			g.changeTurn(t)
+			return
+		}
 		writeError(w, http.StatusBadRequest, err.Error())
 		g.turn <- t
 		return
@@ -126,6 +133,17 @@ func (g *Game) moveHandler(w http.ResponseWriter, r *http.Request, id GameID) {
 	}
 	w.Write([]byte("valid"))
 	g.changeTurn(t)
+}
+
+func (g *Game) pass(w http.ResponseWriter, c game.Color) {
+	if err := g.state.Pass(c); err != nil {
+		if err == game.ErrGameOver {
+			w.Write([]byte(err.Error()))
+			return
+		}
+		writeError(w, http.StatusBadRequest, err.Error())
+	}
+	w.Write([]byte("valid"))
 }
 
 func (g *Game) waitHandler(w http.ResponseWriter, r *http.Request, id GameID) {
@@ -141,9 +159,15 @@ func (g *Game) waitHandler(w http.ResponseWriter, r *http.Request, id GameID) {
 
 func (g Game) parseMove(r *http.Request, c game.Color) (game.Move, error) {
 	d := json.NewDecoder(r.Body)
-	var move [2]int
+	var move []int
 	if err := d.Decode(&move); err != nil {
 		return game.Move{}, fmt.Errorf("Decode move error: %s", err.Error())
+	}
+	if len(move) == 0 {
+		return game.Move{}, passErr
+	}
+	if len(move) != 2 {
+		return game.Move{}, fmt.Errorf("Move has %d coordinates", len(move))
 	}
 	return game.Move{
 		Player:   c,
