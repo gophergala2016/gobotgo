@@ -6,7 +6,7 @@ import (
 	"errors"
 )
 
-type stones struct {
+type Stones struct {
 	Remaining int `json:"remaining"`
 	Captured  int `json:"captured"`
 }
@@ -40,7 +40,7 @@ type State struct {
 	over     bool
 	size     int
 	pieces   int
-	stones   map[Color]*stones
+	stones   map[Color]*Stones
 	last     LastMove
 }
 
@@ -53,7 +53,7 @@ func New(size, pieces int) *State {
 		over:     false,
 		size:     size,
 		pieces:   pieces,
-		stones: map[Color]*stones{
+		stones: map[Color]*Stones{
 			White: {pieces, 0},
 			Black: {pieces, 0},
 		},
@@ -121,14 +121,16 @@ func (s *State) Score() (black, white int) {
 	return
 }
 
+type PublicState struct {
+	Board         Board    `json:"board"`
+	CurrentPlayer Color    `json:"currentplayer"`
+	Black         Stones   `json:"black"`
+	White         Stones   `json:"white"`
+	LastMove      LastMove `json:"lastmove,omitempty"`
+}
+
 func (s *State) MarshalJSON() ([]byte, error) {
-	data := struct {
-		Board         Board    `json:"board"`
-		CurrentPlayer Color    `json:"currentplayer"`
-		Black         stones   `json:"black"`
-		White         stones   `json:"white"`
-		LastMove      LastMove `json:"lastmove,omitempty"`
-	}{
+	data := PublicState{
 		s.current,
 		s.player,
 		*s.stones[Black],
