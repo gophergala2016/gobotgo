@@ -67,7 +67,7 @@ func (s *State) valid(m Move) error {
 	case m.Player != s.player:
 		return ErrWrongPlayer
 	case s.stones[m.Player].Remaining <= 0:
-		if s.stones[m.Player.opponent()].Remaining <= 0 {
+		if s.stones[m.Player.Opponent()].Remaining <= 0 {
 			s.over = true
 			return ErrGameOver
 		}
@@ -89,7 +89,7 @@ func (s *State) Pass(player Color) error {
 		return ErrGameOver
 	}
 	s.previous = s.current
-	s.player = player.opponent()
+	s.player = player.Opponent()
 	return nil
 }
 
@@ -109,7 +109,7 @@ func (s *State) Move(m Move) error {
 	s.current = b
 	s.stones[m.Player].Remaining--
 	s.stones[m.Player].Captured += captured
-	s.player = m.Player.opponent()
+	s.player = m.Player.Opponent()
 	s.last = LastMove{m, captured}
 	return nil
 }

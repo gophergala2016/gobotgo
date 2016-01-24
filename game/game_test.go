@@ -207,7 +207,7 @@ func TestScoring(t *testing.T) {
 		if err := s.Move(move); err != nil {
 			t.Fatalf("failed move %d:%v, got '%s'", i, move, err.Error())
 		}
-		p = p.opponent()
+		p = p.Opponent()
 	}
 
 	t.Log(s.stones[Black], s.stones[White])

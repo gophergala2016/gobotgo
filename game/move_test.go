@@ -62,10 +62,10 @@ func TestMoveValid(t *testing.T) {
 }
 
 func TestOpponent(t *testing.T) {
-	if Black.opponent() != White {
-		t.Errorf("Black opponent should be White, was %s", Black.opponent())
+	if Black.Opponent() != White {
+		t.Errorf("Black opponent should be White, was %s", Black.Opponent())
 	}
-	if White.opponent() != Black {
-		t.Errorf("White opponent should be Black, was %s", White.opponent())
+	if White.Opponent() != Black {
+		t.Errorf("White opponent should be Black, was %s", White.Opponent())
 	}
 }

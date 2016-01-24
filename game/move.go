@@ -40,7 +40,7 @@ func (p Position) adjacent() [4]Position {
 	return adj
 }
 
-func (c Color) opponent() Color {
+func (c Color) Opponent() Color {
 	switch c {
 	case White:
 		return Black
