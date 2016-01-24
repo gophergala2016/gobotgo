@@ -52,32 +52,34 @@ func (b Board) valid(m Move) error {
 	return nil
 }
 
-func (b Board) apply(m Move) error {
+func (b Board) apply(m Move) (int, error) {
 	if err := b.valid(m); err != nil {
-		return err
+		return 0, err
 	}
 	if err := b.intersectionEmpty(m.Position); err != nil {
-		return err
+		return 0, err
 	}
 
 	stone := intersection(m.Player)
 	b.set(m.Position, stone)
 
-	captured := false
+	points := 0
 	for _, p := range m.adjacent() {
 		switch {
 		case !b.rangeCheck(p):
 		case b.get(p) == stone:
-		case b.clearBounded(p) > 0:
-			captured = true
+		default:
+			if count := b.clearBounded(p); count > 0 {
+				points += count
+			}
 		}
 	}
 
-	if !captured && b.bounded(m.Position) {
+	if points == 0 && b.bounded(m.Position) {
 		b.set(m.Position, empty)
-		return fmt.Errorf("Bounded")
+		return 0, fmt.Errorf("Bounded")
 	}
-	return nil
+	return points, nil
 }
 
 func (b Board) equal(c Board) error {

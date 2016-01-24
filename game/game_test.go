@@ -187,3 +187,32 @@ func TestOutOfStonesEnds(t *testing.T) {
 		}
 	}
 }
+
+func TestScoring(t *testing.T) {
+	score := struct {
+		black, white int
+	}{4, 2}
+
+	// assume alternating moves
+	moves := []Position{
+		// black, white
+		{1, 1}, {0, 1},
+		{0, 2}, {0, 3},
+		{0, 0}, {0, 4},
+	}
+	p := Black
+	s := New(5, 100)
+	for i, m := range moves {
+		move := Move{p, m}
+		if err := s.Move(move); err != nil {
+			t.Fatalf("failed move %d:%v, got '%s'", i, move, err.Error())
+		}
+		p = p.opponent()
+	}
+
+	t.Log(s.stones[Black], s.stones[White])
+	b, w := s.Score()
+	if score.black != b || score.white != w {
+		t.Errorf("unmatched score, expected %d-%d, got %d-%d", score.black, score.white, b, w)
+	}
+}

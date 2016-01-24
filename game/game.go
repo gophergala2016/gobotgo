@@ -87,7 +87,8 @@ func (s *State) Move(m Move) error {
 		return err
 	}
 	b := s.current.copy()
-	if err := b.apply(m); err != nil {
+	captured, err := b.apply(m)
+	if err != nil {
 		return err
 	}
 	if b.equal(s.previous) == nil {
@@ -96,6 +97,14 @@ func (s *State) Move(m Move) error {
 	s.previous = s.current
 	s.current = b
 	s.stones[m.Player].remaining--
+	s.stones[m.Player].captured += captured
 	s.player = m.Player.opponent()
 	return nil
+}
+
+func (s *State) Score() (black, white int) {
+	black, white = s.current.score()
+	black += s.stones[Black].captured
+	white += s.stones[White].captured
+	return
 }

@@ -403,6 +403,7 @@ func TestApplyMove(t *testing.T) {
 		initial []intersection
 		m       Move
 		final   []intersection // nil if move is invalid
+		points  int
 	}{
 		{
 			"empty", 2,
@@ -415,6 +416,7 @@ func TestApplyMove(t *testing.T) {
 				black, empty,
 				empty, empty,
 			},
+			0,
 		},
 		{
 			"capture corner", 2,
@@ -427,6 +429,7 @@ func TestApplyMove(t *testing.T) {
 				white, empty,
 				empty, white,
 			},
+			1,
 		},
 		{
 			"corner eye, player", 3,
@@ -441,6 +444,7 @@ func TestApplyMove(t *testing.T) {
 				black, empty, empty,
 				empty, empty, empty,
 			},
+			0,
 		},
 		{
 			"power corner", 2,
@@ -453,6 +457,7 @@ func TestApplyMove(t *testing.T) {
 				white, empty,
 				empty, empty,
 			},
+			3,
 		},
 		// Self capture tests
 		{
@@ -463,6 +468,7 @@ func TestApplyMove(t *testing.T) {
 			},
 			Move{White, Position{0, 0}},
 			nil,
+			0,
 		},
 		{
 			"corner eye, opponent", 3,
@@ -473,6 +479,7 @@ func TestApplyMove(t *testing.T) {
 			},
 			Move{White, Position{0, 0}},
 			nil,
+			0,
 		},
 		{
 			"overlapping capture", 4,
@@ -489,6 +496,7 @@ func TestApplyMove(t *testing.T) {
 				empty, black, white, empty,
 				empty, empty, empty, empty,
 			},
+			1,
 		},
 	}
 
@@ -500,8 +508,12 @@ func TestApplyMove(t *testing.T) {
 			t.Errorf("Test %s tried to move to non-empty space %d, %d", test.name, test.m.X, test.m.Y)
 			continue
 		}
-		if err := b.apply(test.m); (test.final == nil) == (err == nil) {
+		points, err := b.apply(test.m)
+		if (test.final == nil) == (err == nil) {
 			t.Errorf("movability of '%s' was unexpectedly %v: %s", test.name, (test.final == nil), err.Error())
+		}
+		if points != test.points {
+			t.Errorf("expected %d points, got %d", test.points, points)
 		}
 		if err := b.equal(after); err != nil {
 			t.Errorf("Move '%s' result not equal to expected: %s", test.name, err.Error())
