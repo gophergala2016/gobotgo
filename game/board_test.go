@@ -529,7 +529,7 @@ func TestScore(t *testing.T) {
 				empty, black,
 				black, empty,
 			},
-			2, 2,
+			4, 0,
 		},
 		{
 			2,
