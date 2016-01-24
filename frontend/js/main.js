@@ -8,7 +8,9 @@ var sendMove;
 var receiveState;
 var waitForServer;
 var playerColor;
+var playRoot;
 var gameID;
+var lastBoard;
 
 // initialize some sample data and  draw the table containing it
 function init() {
@@ -22,25 +24,57 @@ function init() {
 }
 
 function setUpGame(data, status) {
-    console.log("Game started. Your Color: " + data[1] + "The game ID: " + data[0]);
-    gameID = data[0];
-    playerColor = data[1];
-    sendMove = gameRoot + "/" + gameID + "/move/";
-    waitForServer = gameRoot + "/" + gameID + "/wait/";
-    receiveState = gameRoot + "/" + gameID + "/state/";
+    console.log("Game started. Your Color: " + data["color"] + "The game ID: " + data["ID"]);
+    gameID = data["ID"];
+    playerColor = data["color"];
+    playRoot = gameRoot + "play/" + gameID + "/";
+    sendMove = playRoot + "move/";
+    waitForServer = playRoot + "wait/";
+    receiveState = playRoot + "state/";
     $('.new').hide();
 }
 
 function boardRefresh(data, status) {
+    var color;
     console.log(data);
     console.log(status);
-    drawTable(data);
+    for ( var i = 0; i < data["state"].length; i++ ) {
+        for ( var j = 0; j < data["state"].length; j++ ) {
+
+            var current = data["state"][i][j];
+
+            if ( data["state"] == "None") {
+                color = "img/null.png"
+            }       
+            else if ( rowData[j] == "Black" ) {
+                color = "img/black.png"
+            }  
+            else if ( rowData[j] == "White" ) {
+                color = "img/white.png"
+            }
+            $('#GameBoard tr').eq(i).find('td').eq(j).find('img').src = color;
+        }
+    }
     return;
 }
 
 function connectError(err){
     console.log(err);
     showToast("Server Error. Check console.");
+}
+
+function ajaxPost(url, inputData) {
+    console.log(inputData);
+    $.ajax({
+    url: url,
+    type: 'post',
+    data: inputData,
+    headers: {},
+    dataType: 'json',
+    success: function (data) {
+        console.info(data);
+    }
+});
 }
 
 // temporary listeners - most events will be based on returns from POST requests
@@ -63,7 +97,7 @@ $('.refresh').click(function () {
 });
 
 $('.pass').click(function () {
-    $.post();
+    ajaxPost(sendMove, []);
 });
 
 // Activate the temporary notification 'toast' for _time ms with _message
@@ -120,16 +154,18 @@ function drawRow(rowData, currentRow) {
 
     for (var j = 0; j < rowData.length; j++) {
 
-        if ( rowData[j] == 0) {
+        if ( rowData[j] == "None") {
             color = "<img src=img/null.png>"
         }       
-        else if ( rowData[j] == 1 ) {
+        else if ( rowData[j] == "Black" ) {
             color = "<img src=img/black.png>"
         }  
-        else if ( rowData[j] == 2 ) {
+        else if ( rowData[j] == "White" ) {
             color = "<img src=img/white.png>"
         }
 
         row.append($("<td>" + color + "</td>"));
     }
 }
+
+
