@@ -69,9 +69,9 @@ func (c Color) MarshalJSON() ([]byte, error) {
 func (c *Color) UnmarshalJSON(data []byte) error {
 	s := strings.ToLower(string(data))
 	switch {
-	case 0 == strings.Compare(s, `"black"`):
+	case s == `"black"`:
 		*c = Black
-	case 0 == strings.Compare(s, `"white"`):
+	case s == `"white"`:
 		*c = White
 	default:
 		*c = None
