@@ -78,7 +78,7 @@ func TestBasic(t *testing.T) {
 	v.After(4, wait(t, p1))
 	// Throw in an invalid move before scheduling the real one
 	// This test is slightly broken
-	if err := p2.Move(game.Position{0, 2}); err == nil {
+	if err := p2.Move(game.Position{0, 2}); err != game.ErrSpotNotEmpty {
 		t.Errorf("move [0,2] expected error '%s', got '%s'", game.ErrSpotNotEmpty, err)
 	}
 	v.Before(3, move(t, p2, 1, 0))

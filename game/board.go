@@ -50,7 +50,7 @@ func (b Board) apply(m Move) (int, error) {
 		return 0, err
 	}
 	if err := b.intersectionEmpty(m.Position); err != nil {
-		return 0, err
+		return 0, ErrSpotNotEmpty
 	}
 
 	stone := m.Player
