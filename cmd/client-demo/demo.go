@@ -31,7 +31,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("Game one by %d", c.Opponent())
+	winner := game.None
+	black, white := c.State().Score()
+	black += c.BlackStones().Captured
+	white += c.WhiteStones().Captured
+	switch {
+	case black > white:
+		winner = game.Black
+	case black < white:
+		winner = game.White
+	}
+	log.Printf("Score: b: %d, w: %d", black, white)
+	log.Println("Game won by", winner)
 }
 
 type decision int
