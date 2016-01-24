@@ -31,6 +31,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	printWinner(c)
+}
+
+func printWinner(c *client.Client) {
 	winner := game.None
 	black, white := c.State().Score()
 	black += c.BlackStones().Captured
