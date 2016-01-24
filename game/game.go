@@ -35,10 +35,9 @@ type State struct {
 
 func New(size, pieces int) *State {
 	c := newBoard(size)
-	p := newBoard(size)
 	return &State{
 		current:  c,
-		previous: p,
+		previous: nil,
 		player:   Black,
 		over:     false,
 		size:     size,
@@ -57,6 +56,10 @@ func (s *State) valid(m Move) error {
 	case m.Player != s.player:
 		return ErrWrongPlayer
 	case s.stones[m.Player].remaining <= 0:
+		if s.stones[m.Player.opponent()].remaining <= 0 {
+			s.over = true
+			return ErrGameOver
+		}
 		return ErrNoStones
 	}
 	return nil

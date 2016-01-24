@@ -48,23 +48,6 @@ func TestRemainingCountdown(t *testing.T) {
 	}
 }
 
-func TestRemainingStop(t *testing.T) {
-	tests := []Move{
-		{Black, Position{1, 1}},
-		{White, Position{1, 2}},
-	}
-	s := New(4, 0)
-	for i, test := range tests {
-		s.player = test.Player
-		if err := s.Move(test); err != ErrNoStones {
-			t.Errorf("Expected error '%s' for move %d:%+v, got '%s'", ErrNoStones, i, test, err.Error())
-		}
-		if s.stones[Black].remaining != 0 || s.stones[White].remaining != 0 {
-			t.Errorf("Remaining unexpectedly not zero: %d,%d", s.stones[Black].remaining, s.stones[White].remaining)
-		}
-	}
-}
-
 func TestCannotLoopGameState(t *testing.T) {
 	tests := []struct {
 		Move
@@ -149,6 +132,58 @@ func TestDoublePassEndsGame(t *testing.T) {
 	for i, m := range moves {
 		if err := s.Move(m); err != ErrGameOver {
 			t.Fatalf("Expected Move(%v) at %d to be '%s', got '%s'", m, i, ErrGameOver, err)
+		}
+	}
+}
+
+func TestPassBlackDoesNotEntGame(t *testing.T) {
+	s := New(5, 20)
+	if err := s.Pass(Black); err != nil {
+		t.Fatalf("Did not expect to be unable to pass black, '%s'", err)
+	}
+}
+
+func TestOutOfStonesEnds(t *testing.T) {
+	stoneCount := 4
+	size := 4
+	s := New(size, stoneCount)
+	for i := 0; i < stoneCount; i++ {
+		if err := s.Pass(Black); err != nil {
+			t.Errorf("Unexepected error for %d:Pass(Black), got '%s'", i, err.Error())
+		}
+		m := Move{White, Position{i, 0}}
+		if err := s.Move(m); err != nil {
+			t.Errorf("Unexepected error for move %d:%v, got '%s'", i, m, err.Error())
+		}
+	}
+	for i := 0; i < stoneCount-1; i++ {
+		m := Move{Black, Position{i, 1}}
+		if err := s.Move(m); err != nil {
+			t.Errorf("Unexepected for move %d:%v, got '%s'", i, m, err.Error())
+		}
+		m = Move{White, Position{i, 2}}
+		if err := s.Move(m); err != ErrNoStones {
+			t.Errorf("Expected %d:%v to be '%s', got '%s'", i, m, ErrNoStones, err.Error())
+		}
+		if err := s.Pass(White); err != nil {
+			t.Errorf("Unexepected error for %d:Pass(White), got '%s'", i, err.Error())
+		}
+	}
+	m := Move{Black, Position{3, 1}}
+	if err := s.Move(m); err != nil {
+		t.Errorf("Unexepected for move %v, got '%s'", m, err.Error())
+	}
+	tests := []struct {
+		Move
+		err error
+	}{
+		{Move{White, Position{3, 3}}, ErrGameOver},
+		{Move{Black, Position{3, 3}}, ErrGameOver},
+	}
+
+	for i, test := range tests {
+		if err := s.Move(test.Move); err != test.err {
+			t.Fatalf("Expected %d:Move(%v) to be '%s', got '%s'", i, test.Move, test.err, err)
 		}
 	}
 }

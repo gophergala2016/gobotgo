@@ -85,6 +85,14 @@ func (b Board) capture(p Position) bool {
 }
 
 func (b Board) equal(c Board) error {
+	switch {
+	case b == nil && c == nil:
+		return nil
+	case c == nil:
+		fallthrough
+	case b == nil:
+		return fmt.Errorf("board is nil")
+	}
 	d := b.slice()
 	e := c.slice()
 
