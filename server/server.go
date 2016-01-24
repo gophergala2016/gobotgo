@@ -1,4 +1,5 @@
-package main
+// Package server provides and API for players to connect and play Go against each other.
+package server
 
 import (
 	"encoding/json"
@@ -32,14 +33,13 @@ func init() {
 	masterID <- 1
 }
 
-func main() {
-	port := ":8100"
+func MuxerAPIv1() http.Handler {
 	root := "/api/v1"
 	mux := http.NewServeMux()
 	mux.HandleFunc(filepath.Join(root, "game/start")+"/", startHandler)
 	play := filepath.Join(root, "game/play") + "/"
 	mux.Handle(play, http.StripPrefix(play, http.HandlerFunc(playHandler)))
-	log.Fatal(http.ListenAndServe(port, mux))
+	return mux
 }
 
 func startHandler(w http.ResponseWriter, r *http.Request) {
