@@ -7,6 +7,8 @@ var test_data = [];
 var sendMove;
 var receiveState;
 var waitForServer;
+var playerColor;
+var gameID;
 
 // initialize some sample data and  draw the table containing it
 function init() {
@@ -19,15 +21,26 @@ function init() {
     }
 }
 
+function setUpGame(data, status) {
+    console.log("Game started. Your Color: " + data[1] + "The game ID: " + data[0]);
+    gameID = data[0];
+    playerColor = data[1];
+    sendMove = gameRoot + "/" + gameID + "/move/";
+    waitForServer = gameRoot + "/" + gameID + "/wait/";
+    receiveState = gameRoot + "/" + gameID + "/state/";
+    $('.new').hide();
+}
+
 function boardRefresh(data, status) {
     console.log(data);
-    console.log(status)
+    console.log(status);
     drawTable(data);
     return;
 }
 
 function connectError(err){
     console.log(err);
+    showToast("Server Error. Check console.");
 }
 
 // temporary listeners - most events will be based on returns from POST requests
@@ -37,11 +50,11 @@ $('#GameBoard').on('click', 'td', function(_evt) {
 
 // New Game
 $('.new').click(function () {
-    $.get(startGame, boardRefresh).fail(connectError);
+    $.get(startGame, setUpGame).fail(connectError);
 });
 
 $('.refresh').click(function () {
-    showToast(toastValue, 3000);
+    $.get(receiveState, boardRefresh).fail(connectError);
 });
 
 $('.showToast').click(function () {
