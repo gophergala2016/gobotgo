@@ -116,7 +116,7 @@ func (s *State) Move(m Move) error {
 }
 
 func (s *State) Score() (black, white int) {
-	black, white = s.current.score()
+	black, white = s.current.Score()
 	black += s.stones[Black].Captured
 	white += s.stones[White].Captured
 	return

@@ -183,7 +183,7 @@ func (b Board) clearBounded(start Position) int {
 	return count
 }
 
-func (b Board) score() (blackPoints, whitePoints int) {
+func (b Board) Score() (blackPoints, whitePoints int) {
 	points := b.copy()
 	mask := newBoard(len(b))
 	for x := 0; x < len(b); x++ {

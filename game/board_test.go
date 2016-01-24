@@ -586,7 +586,7 @@ func TestScore(t *testing.T) {
 
 	for i, test := range tests {
 		board := sliceBoard(test.board, test.size)
-		b, w := board.score()
+		b, w := board.Score()
 		if b != test.black || w != test.white {
 			t.Errorf("for %d expected %d-%d, got %d-%d\n%s", i, test.black, test.white, b, w, board)
 		}
