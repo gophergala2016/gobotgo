@@ -191,7 +191,7 @@ func TestOutOfStonesEnds(t *testing.T) {
 func TestScoring(t *testing.T) {
 	score := struct {
 		black, white int
-	}{4, 2}
+	}{5, 2}
 
 	// assume alternating moves
 	moves := []Position{
