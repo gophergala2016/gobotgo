@@ -216,3 +216,38 @@ func TestScoring(t *testing.T) {
 		t.Errorf("unmatched score, expected %d-%d, got %d-%d", score.black, score.white, b, w)
 	}
 }
+
+func TestLastMove(t *testing.T) {
+	size := 4
+	s := New(size, 30)
+	s.current = sliceBoard([]Color{
+		empty, Black, White, empty,
+		Black, White, empty, White,
+		empty, Black, White, empty,
+		empty, empty, empty, empty,
+	}, size)
+
+	move := Move{Black, Position{1, 2}}
+	if err := s.Move(move); err != nil {
+		t.Fatalf("could not make move %v: '%s'", move, err.Error())
+	}
+
+	if move != s.last.Move {
+		t.Errorf("expected move %v, got %v", move, s.last.Move)
+	}
+	if 1 != s.last.PiecesRemoved {
+		t.Errorf("expected 1 piece to be removed, got %d", s.last.PiecesRemoved)
+	}
+
+	move = Move{White, Position{3, 3}}
+	if err := s.Move(move); err != nil {
+		t.Fatalf("could not make move %v: '%s'", move, err.Error())
+	}
+
+	if move != s.last.Move {
+		t.Errorf("expected move %v, got %v", move, s.last.Move)
+	}
+	if 0 != s.last.PiecesRemoved {
+		t.Errorf("expected 0 pieces to be removed, got %d", s.last.PiecesRemoved)
+	}
+}

@@ -23,6 +23,11 @@ const (
 	ErrRepeatState  = MoveError("Move recreates previous state")
 )
 
+type LastMove struct {
+	Move
+	PiecesRemoved int
+}
+
 type State struct {
 	current  Board
 	previous Board
@@ -31,6 +36,7 @@ type State struct {
 	size     int
 	pieces   int
 	stones   map[Color]*stones
+	last     LastMove
 }
 
 func New(size, pieces int) *State {
@@ -99,6 +105,7 @@ func (s *State) Move(m Move) error {
 	s.stones[m.Player].remaining--
 	s.stones[m.Player].captured += captured
 	s.player = m.Player.opponent()
+	s.last = LastMove{m, captured}
 	return nil
 }
 
