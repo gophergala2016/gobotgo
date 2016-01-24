@@ -44,6 +44,7 @@ func MuxerAPIv1() http.Handler {
 }
 
 func startHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	r.ParseForm()
 	size := parseSize(r)
 	g := <-nextGame
@@ -75,7 +76,6 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, fmt.Sprintf("JSON marshal error for %v: %s", s, err.Error()))
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(b)
 }
 
