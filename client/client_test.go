@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -30,6 +29,12 @@ func testError(t *testing.T, err error) {
 	}
 }
 
+func testOver(t *testing.T, err error) {
+	if err != game.ErrGameOver {
+		t.Errorf("unexpected error, expected '%s', got '%s'", game.ErrGameOver, err)
+	}
+}
+
 func move(t *testing.T, c *Client, x, y int) func() {
 	return func() { testError(t, c.Move(game.Position{x, y})) }
 }
@@ -38,8 +43,21 @@ func wait(t *testing.T, c *Client) func() {
 	return func() { testError(t, c.Wait()) }
 }
 
+func passOver(t *testing.T, c *Client) func() {
+	return func() { testOver(t, c.Pass()) }
+}
+
 func pass(t *testing.T, c *Client) func() {
 	return func() { testError(t, c.Pass()) }
+}
+
+func gameOver(t *testing.T, c *Client) func() {
+	return func() {
+		testOver(t, c.Pass())
+		testOver(t, c.Move(game.Position{0, 2}))
+		testOver(t, c.Move(game.Position{0, 2}))
+		testError(t, c.Wait())
+	}
 }
 
 // assumes gobot/server is well formed
@@ -48,17 +66,20 @@ func TestBasic(t *testing.T) {
 	p1 := newClient(t, ts.URL, 1, game.Black)
 	p2 := newClient(t, ts.URL, 2, game.White)
 
+	// white can't play yet
+	if err := p2.Move(game.Position{0, 2}); err != game.ErrWrongPlayer {
+		t.Errorf("move [0,2] expected error '%s', got '%s'", game.ErrWrongPlayer, err)
+	}
+
 	v := validator(t)
 	v.After(2, wait(t, p2))
 	v.Before(1, move(t, p1, 0, 2))
 	v.Verify(time.Second)
 	v.After(4, wait(t, p1))
 	// Throw in an invalid move before scheduling the real one
-	err := p2.Move(game.Position{0, 2})
-	if err == nil {
-		t.Errorf("move [0,2] expected error")
-	} else {
-		fmt.Print(err.Error())
+	// This test is slightly broken
+	if err := p2.Move(game.Position{0, 2}); err == nil {
+		t.Errorf("move [0,2] expected error '%s', got '%s'", game.ErrSpotNotEmpty, err)
 	}
 	v.Before(3, move(t, p2, 1, 0))
 	v.Verify(time.Second)
@@ -66,6 +87,11 @@ func TestBasic(t *testing.T) {
 	v.Before(5, pass(t, p1))
 	v.Verify(time.Second)
 	v.After(8, wait(t, p1))
-	v.Before(7, pass(t, p2))
+	v.Before(7, passOver(t, p2))
+	v.Verify(time.Second)
+	v.After(9, gameOver(t, p1))
+	v.After(9, gameOver(t, p2))
+	v.After(9, gameOver(t, p1))
+	v.After(9, gameOver(t, p2))
 	v.Verify(time.Second)
 }

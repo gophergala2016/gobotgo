@@ -12,13 +12,19 @@ import (
 	"github.com/gophergala2016/gobotgo/server"
 )
 
+type state struct {
+	player   game.Color
+	board    game.Board
+	lastMove game.Move
+}
+
 // Client connects to a URL and begins a game
 type Client struct {
 	client http.Client
 	url    string
 	id     server.GameID
-	board  game.Board
-	color  game.Color
+	player game.Color
+	state
 }
 
 func (c *Client) playURL(s string) string {
@@ -49,7 +55,7 @@ func New(url string) (*Client, error) {
 		return nil, err
 	}
 	c.id = v.ID
-	c.color = v.Color
+	c.player = v.Color
 	return &c, nil
 }
 
@@ -80,13 +86,22 @@ func (c *Client) move(m []int) error {
 	if err != nil {
 		return err
 	}
+
 	switch string(data) {
 	case "valid":
 		return nil
-	case "Game Over":
-		return nil
+	case game.ErrSpotNotEmpty.Error():
+		return game.ErrSpotNotEmpty
+	case game.ErrOutOfBounds.Error():
+		return game.ErrOutOfBounds
+	case game.ErrWrongPlayer.Error():
+		return game.ErrWrongPlayer
+	case game.ErrRepeatState.Error():
+		return game.ErrRepeatState
+	case game.ErrGameOver.Error():
+		return game.ErrGameOver
 	default:
-		return fmt.Errorf("Bad request: %s", string(data))
+		return fmt.Errorf("unexpected response: %s", string(data))
 	}
 }
 
@@ -99,14 +114,18 @@ func (c *Client) Pass() error {
 }
 
 func (c *Client) Color() game.Color {
-	return c.color
+	return c.player
 }
 
 func (c *Client) Opponent() game.Color {
-	return c.Opponent()
+	return c.player.Opponent()
 }
 
 func (c *Client) Wait() error {
 	_, err := c.client.Get(c.playURL("wait"))
 	return err
+}
+
+func (c *Client) CurrentPlayer() game.Color {
+	return c.state.player
 }
