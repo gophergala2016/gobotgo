@@ -94,4 +94,14 @@ func TestBasic(t *testing.T) {
 	v.After(9, gameOver(t, p1))
 	v.After(9, gameOver(t, p2))
 	v.Verify(time.Second)
+
+	testPosition(t, p1, game.White, 1, 0)
+	testPosition(t, p2, game.White, 1, 0)
+}
+
+func testPosition(t *testing.T, c *Client, p game.Color, x, y int) {
+	found := c.state.Board[x][y]
+	if p != found {
+		t.Errorf("at %d-%d expected %s, found %s", p, found)
+	}
 }

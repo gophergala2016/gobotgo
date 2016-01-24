@@ -11,19 +11,13 @@ import (
 	"github.com/gophergala2016/gobotgo/server"
 )
 
-type state struct {
-	player   game.Color
-	board    game.Board
-	lastMove game.Move
-}
-
 // Client connects to a URL and begins a game
 type Client struct {
 	client http.Client
 	url    string
 	id     server.GameID
 	player game.Color
-	state
+	state  game.PublicState
 }
 
 func (c *Client) playURL(s string) string {
@@ -55,6 +49,11 @@ func New(url string) (*Client, error) {
 	}
 	c.id = v.ID
 	c.player = v.Color
+
+	if err := c.loadState(); err != nil {
+		return nil, err
+	}
+
 	return &c, nil
 }
 
@@ -62,9 +61,18 @@ func (c *Client) ID() server.GameID {
 	return c.id
 }
 
-func (c *Client) State() game.Board {
+func (c *Client) loadState() error {
+	ps := game.PublicState{}
+	resp, err := c.client.Get(c.playURL("state"))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if err := json.NewDecoder(resp.Body).Decode(&ps); err != nil {
+		return err
+	}
+	c.state = ps
 	return nil
-	// return c.board.copy()
 }
 
 func (c *Client) move(m []int) error {
@@ -85,6 +93,9 @@ func (c *Client) move(m []int) error {
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return err
 	}
+
+	err = c.loadState()
+
 	switch response {
 	case "valid":
 		return nil
@@ -101,6 +112,11 @@ func (c *Client) move(m []int) error {
 	default:
 		return fmt.Errorf("Bad request: %s", response)
 	}
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *Client) Move(p game.Position) error {
@@ -121,9 +137,22 @@ func (c *Client) Opponent() game.Color {
 
 func (c *Client) Wait() error {
 	_, err := c.client.Get(c.playURL("wait"))
-	return err
+	err2 := c.loadState()
+	switch {
+	case err != nil:
+		return err
+	case err2 != nil:
+		return err2
+	default:
+		return nil
+	}
 }
 
 func (c *Client) CurrentPlayer() game.Color {
-	return c.state.player
+	return c.state.CurrentPlayer
+}
+
+// State returns a copy of the board state
+func (c *Client) State() game.Board {
+	return c.state.Board.Copy()
 }
