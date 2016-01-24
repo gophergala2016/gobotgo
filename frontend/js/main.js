@@ -13,12 +13,12 @@ var gameID;
 // initialize some sample data and  draw the table containing it
 function init() {
     for (var i = 0; i < size; i++){
-
         test_data[i] = [];
         for (var j = 0; j < size; j++){
             test_data[i][j] = 0;
         }
     }
+    drawTable(test_data);
 }
 
 function setUpGame(data, status) {
@@ -48,6 +48,11 @@ $('#GameBoard').on('click', 'td', function(_evt) {
     console.log("Clicked", this, _evt);
 });
 
+$('#GameBoard').on('mouseenter', 'td', function(_evt) {
+    console.log("Over", this, _evt);
+    $('feedbackBox').text("X: " + _evt.currentTarget.cellIndex + ", Y: " + _evt.currentTarget.parentElement.rowIndex);
+});
+
 // New Game
 $('.new').click(function () {
     $.get(startGame, setUpGame).fail(connectError);
@@ -57,8 +62,8 @@ $('.refresh').click(function () {
     $.get(receiveState, boardRefresh).fail(connectError);
 });
 
-$('.showToast').click(function () {
-    showToast(toastValue, 3000);
+$('.pass').click(function () {
+    $.post();
 });
 
 // Activate the temporary notification 'toast' for _time ms with _message
