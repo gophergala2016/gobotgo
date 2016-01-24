@@ -28,18 +28,33 @@ body {
 table, th, td, tr {
 	text-align: center;
 	padding: 0;
+	border: none;
     margin: 0;
+}
+
+td {
+	height: 50px;
+}
+
+tr {
+	height: 50px;
 }
 
 img{
 	display: block;
+	width: 50px;
+	height: 50px;
 }
 
 table {
     table-layout: fixed;
-    border: none;
     overflow: hidden;
+    height: 1000px;
+    width: 1000px;
+    background-image: url("../img/grid.svg");
 }
+
+
 
 .content{
 	padding-left: 70px;
