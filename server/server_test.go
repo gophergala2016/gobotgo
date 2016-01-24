@@ -24,7 +24,7 @@ func (tw *testWriter) Write(b []byte) (int, error) {
 func (tw testWriter) WriteHeader(int) {}
 
 func (tw testWriter) Header() http.Header {
-	return nil
+	return http.Header{}
 }
 
 var wg sync.WaitGroup
