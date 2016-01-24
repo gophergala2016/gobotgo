@@ -1,23 +1,47 @@
 
-var data = [];
+var gameRoot = "http://localhost:8100/api/v1/game/";
+var startGame = gameRoot + "start/";
 var size = 19;
-var toastValue = "The toast is shown.";
+var test_data = [];
+
+var sendMove;
+var receiveState;
+var waitForServer;
 
 // initialize some sample data and  draw the table containing it
 function init() {
     for (var i = 0; i < size; i++){
 
-        data[i] = [];
+        test_data[i] = [];
         for (var j = 0; j < size; j++){
-            data[i][j] = Math.floor((Math.random() * 3.0) + 1) - 1;
+            test_data[i][j] = 0;
         }
     }
+}
+
+function boardRefresh(data, status) {
+    console.log(data);
+    console.log(status)
     drawTable(data);
+    return;
+}
+
+function connectError(err){
+    console.log(err);
 }
 
 // temporary listeners - most events will be based on returns from POST requests
 $('#GameBoard').on('click', 'td', function(_evt) {
     console.log("Clicked", this, _evt);
+});
+
+// New Game
+$('.new').click(function () {
+    $.get(startGame, boardRefresh).fail(connectError);
+});
+
+$('.refresh').click(function () {
+    showToast(toastValue, 3000);
 });
 
 $('.showToast').click(function () {
