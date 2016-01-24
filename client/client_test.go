@@ -2,6 +2,7 @@ package client
 
 import (
 	"net/http/httptest"
+	"runtime"
 	"testing"
 	"time"
 
@@ -25,13 +26,15 @@ func newClient(t *testing.T, URL string, ID server.GameID, color game.Color) *Cl
 
 func testError(t *testing.T, err error) {
 	if err != nil {
-		t.Errorf("unexpected error '%s'", err.Error())
+		_, file, line, _ := runtime.Caller(2)
+		t.Errorf("%s:%d: unexpected error '%s'", file, line, err.Error())
 	}
 }
 
 func testOver(t *testing.T, err error) {
 	if err != game.ErrGameOver {
-		t.Errorf("unexpected error, expected '%s', got '%s'", game.ErrGameOver, err)
+		_, file, line, _ := runtime.Caller(2)
+		t.Errorf("%s:%d: unexpected error, expected '%s', got '%s'", file, line, game.ErrGameOver, err)
 	}
 }
 
