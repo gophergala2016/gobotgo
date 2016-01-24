@@ -27,6 +27,7 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if g.gameOver {
 		w.Write([]byte("Game Over"))
+		return
 	}
 	switch action {
 	case "state":
