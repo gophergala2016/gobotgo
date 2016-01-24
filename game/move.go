@@ -1,5 +1,10 @@
 package game
 
+import (
+	"encoding/json"
+	"strings"
+)
+
 type Position struct {
 	X, Y int
 }
@@ -55,4 +60,21 @@ func (c Color) String() string {
 	default:
 		return "None"
 	}
+}
+
+func (c Color) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.String())
+}
+
+func (c *Color) UnmarshalJSON(data []byte) error {
+	s := strings.ToLower(string(data))
+	switch {
+	case 0 == strings.Compare(s, `"black"`):
+		*c = Black
+	case 0 == strings.Compare(s, `"white"`):
+		*c = White
+	default:
+		*c = None
+	}
+	return nil
 }

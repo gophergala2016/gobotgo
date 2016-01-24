@@ -1,9 +1,14 @@
 // Package game provides means of playing a game
 package game
 
+import (
+	"encoding/json"
+	"errors"
+)
+
 type stones struct {
-	remaining int
-	captured  int
+	Remaining int `json:"remaining"`
+	Captured  int `json:"captured"`
 }
 
 // MoveError is returned if State.Move can't play the piece
@@ -23,6 +28,11 @@ const (
 	ErrRepeatState  = MoveError("Move recreates previous state")
 )
 
+type LastMove struct {
+	Move
+	PiecesRemoved int
+}
+
 type State struct {
 	current  Board
 	previous Board
@@ -31,6 +41,7 @@ type State struct {
 	size     int
 	pieces   int
 	stones   map[Color]*stones
+	last     LastMove
 }
 
 func New(size, pieces int) *State {
@@ -55,8 +66,8 @@ func (s *State) valid(m Move) error {
 		return ErrGameOver
 	case m.Player != s.player:
 		return ErrWrongPlayer
-	case s.stones[m.Player].remaining <= 0:
-		if s.stones[m.Player.opponent()].remaining <= 0 {
+	case s.stones[m.Player].Remaining <= 0:
+		if s.stones[m.Player.opponent()].Remaining <= 0 {
 			s.over = true
 			return ErrGameOver
 		}
@@ -96,15 +107,37 @@ func (s *State) Move(m Move) error {
 	}
 	s.previous = s.current
 	s.current = b
-	s.stones[m.Player].remaining--
-	s.stones[m.Player].captured += captured
+	s.stones[m.Player].Remaining--
+	s.stones[m.Player].Captured += captured
 	s.player = m.Player.opponent()
+	s.last = LastMove{m, captured}
 	return nil
 }
 
 func (s *State) Score() (black, white int) {
 	black, white = s.current.score()
-	black += s.stones[Black].captured
-	white += s.stones[White].captured
+	black += s.stones[Black].Captured
+	white += s.stones[White].Captured
 	return
+}
+
+func (s *State) MarshalJSON() ([]byte, error) {
+	data := struct {
+		Board         Board    `json:"board"`
+		CurrentPlayer Color    `json:"currentplayer"`
+		Black         stones   `json:"black"`
+		White         stones   `json:"white"`
+		LastMove      LastMove `json:"lastmove,omitempty"`
+	}{
+		s.current,
+		s.player,
+		*s.stones[Black],
+		*s.stones[White],
+		s.last,
+	}
+	return json.Marshal(data)
+}
+
+func (s *State) UnmarshalJSON(data []byte) error {
+	return errors.New("cannot unmarshal state as data is lost in JSON transmission")
 }
