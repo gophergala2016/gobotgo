@@ -20,7 +20,7 @@ func (tw testWriter) Header() http.Header {
 	return nil
 }
 
-func TestStateHandler(t *testing.T) {
+func TestStartHandler(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/", nil)
 	tests := []struct {
 		input    *http.Request
