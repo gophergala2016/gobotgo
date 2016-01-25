@@ -100,7 +100,7 @@ $('.refresh').click(function () {
 });
 
 $('.pass').click(function () {
-    $.post(sendMove, "", okay).fail(connectError);
+    $.post(sendMove, "[]", okay).fail(connectError);
 });
 
 function okay() {
