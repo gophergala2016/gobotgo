@@ -32,11 +32,27 @@ function setUpGame(data, status) {
     waitForServer = playRoot + "wait/";
     receiveState = playRoot + "state/";
     $('.new').hide();
+    $.get(receiveState, boardRefresh).fail(connectError);
+}
+
+function getState(data, success) {
+    okay();
+    $.get(receiveState, boardRefresh).fail(connectError);
+    waitForMove();
+}
+
+function waitForMove(){
+    $.get(waitForServer, moveReceived).fail(connectError);
+}
+
+function moveReceived(){
+    showToast("move recieved", 2000);
+    $.get(receiveState, boardRefresh).fail(connectError);
 }
 
 function boardRefresh(data, status) {
     var color;
-    console.log(data);
+    console.log("data", data);
     console.log(status);
     for ( var i = 0; i < data["board"].length; i++ ) {
         for ( var j = 0; j < data["board"].length; j++ ) {
@@ -79,7 +95,7 @@ function ajaxPost(url, inputData) {
 // temporary listeners - most events will be based on returns from POST requests
 $('#GameBoard').on('click', 'td', function(_evt) {
     console.log("Clicked", this, _evt);
-    $.post(sendMove, JSON.stringify([_evt.currentTarget.cellIndex, _evt.currentTarget.parentElement.rowIndex]), okay).fail(connectError);
+    $.post(sendMove, JSON.stringify([_evt.currentTarget.cellIndex, _evt.currentTarget.parentElement.rowIndex]), getState).fail(connectError);
 });
 
 $('#GameBoard').on('mouseenter', 'td', function(_evt) {
@@ -97,7 +113,7 @@ $('.refresh').click(function () {
 });
 
 $('.pass').click(function () {
-    $.post(sendMove, "[2,4]", okay).fail(connectError);
+    $.post(sendMove, "", okay).fail(connectError);
 });
 
 function okay() {
