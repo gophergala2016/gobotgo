@@ -42,6 +42,7 @@ function getState(data, success) {
 }
 
 function waitForMove(){
+    showToast("Waiting for move", 2000);
     $.get(waitForServer, moveReceived).fail(connectError);
 }
 
@@ -67,7 +68,7 @@ function boardRefresh(data, status) {
             else if ( data["board"][i][j] == "White" ) {
                 color = "img/white.png"
             }
-            $('#GameBoard tr').eq(j).find('td').eq(i).find('img').attr('src', color);
+            $('#GameBoard tr').eq(j+1).find('td').eq(i+1).find('img').attr('src', color);
         }
     }
     return;
@@ -78,24 +79,10 @@ function connectError(err){
     showToast("Server Error. Check console.");
 }
 
-function ajaxPost(url, inputData) {
-    console.log(inputData);
-    $.ajax({
-    url: url,
-    type: 'post',
-    data: inputData,
-    headers: {},
-    dataType: 'json',
-    success: function (data) {
-        console.info(data);
-    }
-});
-}
-
 // temporary listeners - most events will be based on returns from POST requests
 $('#GameBoard').on('click', 'td', function(_evt) {
     console.log("Clicked", this, _evt);
-    $.post(sendMove, JSON.stringify([_evt.currentTarget.cellIndex, _evt.currentTarget.parentElement.rowIndex]), getState).fail(connectError);
+    $.post(sendMove, JSON.stringify([_evt.currentTarget.cellIndex-1, _evt.currentTarget.parentElement.rowIndex-1]), getState).fail(connectError);
 });
 
 $('#GameBoard').on('mouseenter', 'td', function(_evt) {
