@@ -12,6 +12,7 @@ import (
 )
 
 var url = flag.String("url", "http://localhost:8100", "Root URL of gobotgo service")
+var competitive = flag.Bool("competitive", false, "Use a slightly more aggressive algorithm")
 
 func init() {
 	flag.Parse()
@@ -19,6 +20,9 @@ func init() {
 }
 
 func main() {
+	if *competitive {
+		log.Println("Playing competitively")
+	}
 	log.Println("Connecting...")
 	c, err := client.New(*url)
 	if err != nil {
@@ -34,11 +38,16 @@ func main() {
 	printWinner(c)
 }
 
-func printWinner(c *client.Client) {
-	winner := game.None
-	black, white := c.State().Score()
+func score(c *client.Client) (black, white int) {
+	black, white = c.State().Score()
 	black += c.BlackStones().Captured
 	white += c.WhiteStones().Captured
+	return
+}
+
+func printWinner(c *client.Client) {
+	winner := game.None
+	black, white := score(c)
 	switch {
 	case black > white:
 		winner = game.Black
@@ -57,12 +66,18 @@ func play(c *client.Client) error {
 		act.Choose()
 		if err := act.Act(); err != nil {
 			switch err {
+			case game.ErrRepeatState:
+				act.Pass()
+
 			case game.ErrNoStones:
 				fallthrough
 			case game.ErrSpotNotEmpty:
 				fallthrough
 			case game.ErrSelfCapture:
-				log.Printf("invalid move %+v: '%s'", act.Position, err.Error())
+				log.Printf("(%d): invalid move %+v: '%s'", act.ID(), act.Position, err.Error())
+				// Make sure we update the state after this
+				act.choice = wait
+
 			default:
 				return err
 			}
@@ -95,9 +110,58 @@ func (act *action) Act() error {
 	}
 }
 
+// Relative advantage for c with given board
+func advantage(c *client.Client, b game.Board) int {
+	black, white := b.Score()
+	diff := black - white
+	if c.Color() == game.White {
+		diff = -diff
+	}
+	return diff
+}
+
+// Picks most competitive immediate move, or random.
+//   - Passes if everything is worse/indifferent (won't fill territory)
+//   - Picks random competitive move
+func (act *action) competitive() {
+	choices := map[int][]game.Position{}
+	b := act.State()
+	nothing := advantage(act.Client, b)
+	for x, rows := range b {
+		for y, cols := range rows {
+			if cols != game.None {
+				continue
+			}
+			c := b.Copy()
+			pos := game.Position{x, y}
+			taken, err := c.Apply(game.Move{act.Color(), pos})
+			if err != nil {
+				continue
+			}
+			score := advantage(act.Client, c) + taken
+			choices[score] = append(choices[score], pos)
+		}
+	}
+	// we could have a negative advantage
+	max := nothing
+	for k := range choices {
+		if k > max {
+			max = k
+		}
+	}
+	if max <= nothing {
+		act.choice = pass
+	} else {
+		act.choice = move
+		options := choices[max]
+		act.Position = options[rand.Intn(len(options))]
+	}
+}
+
 // Fair random
-func (act *action) rand() game.Position {
+func (act *action) rand() {
 	// count remaining pieces
+	act.choice = move
 	b := act.State()
 	empty := 0
 	for _, rows := range b {
@@ -118,7 +182,8 @@ func (act *action) rand() game.Position {
 		for y, cols := range rows {
 			if cols == game.None {
 				if empty == position {
-					return game.Position{x, y}
+					act.X, act.Y = x, y
+					return
 				}
 				empty++
 			}
@@ -126,15 +191,21 @@ func (act *action) rand() game.Position {
 	}
 	log.Println(position, empty)
 	log.Fatal("Didn't find an empty space for rant!")
-	return game.Position{}
 }
 
 func (act *action) Choose() {
+	stones := act.WhiteStones()
+	if act.Color() == game.Black {
+		stones = act.BlackStones()
+	}
 	switch {
 	case act.Opponent() == act.CurrentPlayer():
 		act.choice = wait
+	case stones.Remaining <= 0:
+		act.choice = pass
+	case *competitive:
+		act.competitive()
 	default:
-		act.choice = move
-		act.Position = act.rand()
+		act.rand()
 	}
 }
