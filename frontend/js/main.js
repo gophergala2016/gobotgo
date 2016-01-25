@@ -41,7 +41,6 @@ function boardRefresh(data, status) {
     for ( var i = 0; i < data["board"].length; i++ ) {
         for ( var j = 0; j < data["board"].length; j++ ) {
 
-            var current = data["board"][i][j];
 
             if ( data["board"][i][j] == "None") {
                 color = "img/null.png"
@@ -52,7 +51,7 @@ function boardRefresh(data, status) {
             else if ( data["board"][i][j] == "White" ) {
                 color = "img/white.png"
             }
-            $('#GameBoard tr').eq(i).find('td').eq(j).find('img').attr('src', color);
+            $('#GameBoard tr').eq(j).find('td').eq(i).find('img').attr('src', color);
         }
     }
     return;
@@ -80,10 +79,11 @@ function ajaxPost(url, inputData) {
 // temporary listeners - most events will be based on returns from POST requests
 $('#GameBoard').on('click', 'td', function(_evt) {
     console.log("Clicked", this, _evt);
+    $.post(sendMove, JSON.stringify([_evt.currentTarget.cellIndex, _evt.currentTarget.parentElement.rowIndex]), okay).fail(connectError);
 });
 
 $('#GameBoard').on('mouseenter', 'td', function(_evt) {
-    console.log("Over", this, _evt);
+    console.log("X: " + _evt.currentTarget.cellIndex + ", Y: " + _evt.currentTarget.parentElement.rowIndex);
     $('feedbackBox').text("X: " + _evt.currentTarget.cellIndex + ", Y: " + _evt.currentTarget.parentElement.rowIndex);
 });
 
@@ -97,7 +97,7 @@ $('.refresh').click(function () {
 });
 
 $('.pass').click(function () {
-    $.post(sendMove, "[2,2]", okay).fail(connectError);
+    $.post(sendMove, "[2,4]", okay).fail(connectError);
 });
 
 function okay() {
